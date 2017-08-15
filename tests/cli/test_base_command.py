@@ -30,7 +30,7 @@ def test_prompt_input(base_cmd, mocker):
 def test_prompt_input_help(base_cmd, mocker):
     """help is printed when using input()"""
     base_cmd.OPTIONS = [
-        ('e', '--example', 'example argument')
+        ('-e', '--example', 'example argument')
     ]
 
     mocker.patch('builtins.input')
@@ -46,7 +46,7 @@ def test_populate_parser(base_cmd):
     base_cmd.NAME = 'base_test'
     base_cmd.HELP = 'base test help'
     base_cmd.OPTIONS = [
-        ('e', '--example', 'example argument')
+        ('-e', '--example', 'example argument')
     ]
     subparsers = MagicMock()
     parser = MagicMock()
@@ -58,5 +58,5 @@ def test_populate_parser(base_cmd):
         'base_test', help='base test help'
     )
     parser.add_argument.assert_called_once_with(
-        'e', '--example', help='example argument'
+        '-e', '--example', help='example argument'
     )
