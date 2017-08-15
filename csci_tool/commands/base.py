@@ -15,7 +15,7 @@ class BaseCommand(object):
 
     def run(self, args):
         """Run with the args from the subparser"""
-        raise NotImplemented('Subcommands must implement run()')
+        raise NotImplementedError('Subcommands must implement run()')
 
     def prompt(self, args, key):
         """Intelligently prompt the user for some data, first checking if it's
