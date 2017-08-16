@@ -55,7 +55,7 @@ class Config(object):
         This recurses up to parent directories until reaching /, returning the
         first .cscirc found, or ~/.cscirc
 
-        Args:
+        Arguments:
             d (str): directory to start searching (usually cwd)
         Returns:
             PathLike path to config file to use
@@ -99,3 +99,21 @@ class Config(object):
         if 'user' not in self._config:
             self._config['user'] = {}
         self._config['user']['email'] = email
+
+    @property
+    def template_url(self):
+        """URL to template git repo"""
+        return self._config['template']['remote']
+
+    @template_url.setter
+    def template_url(self, url):
+        if 'template' not in self._config:
+            self._config['template'] = {}
+        self._config['template']['remote'] = url
+
+    def last_template_commit(self, branch='master'):
+        """Last commit sha in template repo that we've applied"""
+        return self._config['template'][branch]['last_commit']
+
+    def set_last_template_commit(self, commit, branch='master'):
+        return self._config['template'][branch]['last_commit'] = commit

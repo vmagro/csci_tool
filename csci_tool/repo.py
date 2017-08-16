@@ -14,8 +14,9 @@ class Repo(object):
         path (PathLike): path to student git repo
     """
 
-    def __init__(self, path):
+    def __init__(self, path, config):
         self.path = path
+        self.template_remote = config.template_url
 
     @staticmethod
     def get_template_repo(course_name):
@@ -51,8 +52,11 @@ class Repo(object):
                 with open(dest_path, 'w') as dest:
                     dest.write(rendered)
 
-    def get_patches(self, since=None):
-        if since is None:
-            # get a patch for the repo compared to nothing (all files)
-            pass
+    def update_from_branch(self, branch, from_commit):
+        """Updates the current branch with commits from branch since from_commit
+
+        Arguments:
+            branch (str): template branch to update from
+            from_commit (str): git commit hash of latest commit we have
+        """
         pass
