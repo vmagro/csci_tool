@@ -1,5 +1,8 @@
 from jinja2 import Template
+import logging
 from os import path
+
+logger = logging.getLogger(__name__)
 
 
 class Repo(object):
@@ -33,13 +36,15 @@ class Repo(object):
         # list of template paths that need to be filled in with student data as
         # part of the repo initialization
         with open(path.join(template_repo_path, 'initialize_files'), 'r') as f:
-            init_files = f.readlines()
+            init_files = [l.strip() for l in f.readlines()]
+            logger.debug('init template files: %s', init_files)
         # init_files is a list of template file paths that we need to render
         for template_path in init_files:
             # TODO(vmagro) handle files in subdirectory
             suffix_len = len('.template') + 1
             dest_path = path.join(self.path, template_path[:-suffix_len])
-            template_path = path.join(template_repo_path, template_path.strip())
+            template_path = path.join(template_repo_path, template_path)
+            logger.info('Rendering template %s -> %s', template_path, dest_path)
             with open(template_path, 'r') as template:
                 template = Template(template.read())
                 rendered = template.render(config=config)
