@@ -1,6 +1,6 @@
 import os
 
-from csci_tool.config import find_config, load_config
+from csci_tool.config import Config
 
 # make the linter happy
 FileNotFoundError = OSError
@@ -11,7 +11,8 @@ def test_not_found(fs):
     fs.MakeDirectories('/test/config/project/subdir')
     os.chdir('/test/config/project/subdir')
     d = os.getcwd()
-    assert find_config(d) == os.path.join(os.path.expanduser('~'), '.cscirc')
+    c = Config.find_config(d)
+    assert c == os.path.join(os.path.expanduser('~'), '.cscirc')
 
 
 def test_cwd(fs):
@@ -19,7 +20,7 @@ def test_cwd(fs):
     fs.MakeDirectories('/test/config/project/subdir')
     os.chdir('/test/config/project/subdir')
     fs.CreateFile('/test/config/project/subdir/.cscirc')
-    assert load_config() is not None, 'should have loaded config'
+    assert Config.load_config() is not None, 'should have loaded config'
 
 
 def test_grandparent(fs):
@@ -29,4 +30,4 @@ def test_grandparent(fs):
     fs.CreateFile('/test/config/.cscirc')
     # make sure we're really getting the grandparent cscirc
     assert not fs.Exists('/test/config/project/subdir/.cscirc')
-    assert load_config() is not None, 'should have loaded config'
+    assert Config.load_config() is not None, 'should have loaded config'

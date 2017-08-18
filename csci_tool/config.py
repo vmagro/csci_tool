@@ -66,8 +66,9 @@ class Config(object):
             return path.join(d, '.cscirc')
         elif path.dirname(d) == d:
             # don't go up past /
-            # default to ~/.cscirc
-            return path.join(path.expanduser('~'), '.cscirc')
+            # default to ~/.csci/.cscirc
+            logger.debug('Defaulting to config ~/.csci/.cscirc')
+            return path.join(path.expanduser('~'), '.csci', '.cscirc')
         else:
             parent = path.dirname(d)
             logger.debug('Didn\'t find .cscirc in %s, checking %s', d, parent)
@@ -101,19 +102,23 @@ class Config(object):
         self._config['user']['email'] = email
 
     @property
-    def template_url(self):
-        """URL to template git repo"""
-        return self._config['template']['remote']
+    def template_repo(self):
+        """Path to template git repo"""
+        return self._config['template']['path']
 
-    @template_url.setter
-    def template_url(self, url):
+    @template_repo.setter
+    def template_repo(self, url):
         if 'template' not in self._config:
             self._config['template'] = {}
-        self._config['template']['remote'] = url
+        self._config['template']['path'] = url
 
-    def last_template_commit(self, branch='master'):
-        """Last commit sha in template repo that we've applied"""
-        return self._config['template'][branch]['last_commit']
+    @property
+    def github_org(self):
+        """Name of github org (eg ctcusc for github.com/ctcusc"""
+        return self._config['github']['org']
 
-    def set_last_template_commit(self, commit, branch='master'):
-        return self._config['template'][branch]['last_commit'] = commit
+    @github_org.setter
+    def github_org(self, org):
+        if 'github' not in self._config:
+            self._config['github'] = {}
+        self._config['github']['org'] = org
