@@ -31,7 +31,7 @@ setup(
     url='https://www.github.com/vmagro/csci-tool',
     packages=find_packages(exclude=['tests']),
     install_requires=[
-        'jinja2',
+        'jinja2', 'gitpython'
     ],
     tests_require=[
         'pytest', 'pytest-cov', 'coverage', 'mock', 'pyfakefs', 'pytest-mock',

@@ -12,7 +12,7 @@ def test_not_found(fs):
     os.chdir('/test/config/project/subdir')
     d = os.getcwd()
     c = Config.find_config(d)
-    assert c == os.path.join(os.path.expanduser('~'), '.cscirc')
+    assert c == os.path.join(os.path.expanduser('~'), '.csci', '.cscirc')
 
 
 def test_cwd(fs):

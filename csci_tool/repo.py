@@ -1,5 +1,6 @@
 import logging
 import tempfile
+from git import Repo as GitRepo
 
 logger = logging.getLogger(__name__)
 
@@ -40,5 +41,5 @@ class Repo(object):
         tempdir = tempfile.mkdtemp()
         repo_url = student.repo_url
         logger.debug('%s -> %s', repo_url, tempdir)
-        # TODO(vmagro) clone repo into tempdir
+        GitRepo.clone_from(repo_url, tempdir)
         return tempdir

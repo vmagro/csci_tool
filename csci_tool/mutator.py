@@ -1,10 +1,11 @@
-from abc import ABCMeta, abstractmethod
 from collections import namedtuple
+import importlib.util
+import os
 
 Mutation = namedtuple('Mutation', 'commit_message')
 
 
-class Mutator(metaclass=ABCMeta):
+class Mutator():
     """Mutator is an interface to make modifications to student github repos.
     Mutators are responsible for modifying the working copy of a
     student repo - for example to create the starter files for an assignment.
@@ -14,20 +15,33 @@ class Mutator(metaclass=ABCMeta):
 
     Mutators should live in a subdirectory of the template repo and be named
     'mutate.py' which will automatically be run by the CLI.
-    """
 
-    @abstractmethod
-    def mutate(self, student):
-        """mutate changes the working copy of a student repo
+    Mutators must implement a function mute as described below:
+        mutate changes the working copy of a student repo
         There is no need to commit the changes, the mutation runner will run the
         mutator, then commit the changes.
         mutate is run with cwd set to the corresponding directory in the student
         repo, for example for <template>/datalab/mutate.py, os.getcwd will be
         <student>/datalab/
 
-        Args:
+        Arguments:
             student (Student)
         Returns:
             Mutation: metadata about what was changed
+    """
+
+    @staticmethod
+    def get_mutator(name):
+        """Loads a Mutator from the template repo by name (AKA subdirectory)
+
+        Arguments:
+            name (str): name of mutator (subdir it lives in)
+        Returns:
+            function: mutator loaded from mutate.py (function named mutate)
         """
-        raise NotImplementedError('Must be implemented by a subclass')
+        template_dir = '/Users/vmagro/tmp/csci_356_template/'
+        spec = importlib.util.spec_from_file_location(
+            name + '.mutate', os.path.join(template_dir, name, 'mutate.py'))
+        mutate = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mutate)
+        return mutate
