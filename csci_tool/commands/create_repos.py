@@ -8,9 +8,9 @@ from ..student import Student
 logger = logging.getLogger(__name__)
 
 
-class MutateCommand(BaseCommand):
-    NAME = 'mutate'
-    HELP = 'update student repos'
+class CreateReposCommand(BaseCommand):
+    NAME = 'create-repos'
+    HELP = 'create student repos'
     OPTIONS = [
         (('-m', '--mutation'), {help: 'name of mutator'}),
     ]

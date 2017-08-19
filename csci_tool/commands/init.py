@@ -14,8 +14,8 @@ class InitCommand(BaseCommand):
     NAME = 'init'
     HELP = 'login to admin a course'
     OPTIONS = [
-        ('-g', '--github', 'GitHub username'),
-        ('-e', '--email', 'USC email'),
+        (('-g', '--github'), {help: 'GitHub username'}),
+        (('-e', '--email'), {help: 'USC email'}),
         # TODO(vmagro) make generic for different classes
         # ('-c', '--course', 'CSCI course number (eg 356)'),
     ]

@@ -4,14 +4,27 @@ class BaseCommand(object):
     from the command line.
     """
 
+    @staticmethod
+    def unpack_option(opt):
+        """Unpacks an option for argparse, with an optional kwargs"""
+        # make it optional to have kwargs in case the help is not needed
+        if len(opt) > 1:
+            print(opt)
+            args, kwargs = opt
+        else:
+            args = opt
+            kwargs = {}
+        return args, kwargs
+
     def populate_parser(self, subparsers):
         """Populate an subparser with the options for this subcommand"""
         parser = subparsers.add_parser(self.NAME, help=self.HELP)
         parser.set_defaults(command=self)
         options = getattr(self, 'OPTIONS', [])
         for opt in options:
-            short, long, help = opt
-            parser.add_argument(short, long, help=help)
+            args, kwargs = self.unpack_option(opt)
+            print(args, kwargs)
+            parser.add_argument(*args, **kwargs)
 
     def run(self, args):
         """Run with the args from the subparser"""
@@ -25,7 +38,12 @@ class BaseCommand(object):
         help = key
         options = getattr(self, 'OPTIONS', [])
         for opt in options:
-            short, long, cur_help = opt
+            args, kwargs = self.unpack_option(opt)
+            short, long = args
+            if 'help' in kwargs:
+                cur_help = kwargs['help']
+            else:
+                cur_help = key
             if long == '--' + key:
                 help = cur_help
 
