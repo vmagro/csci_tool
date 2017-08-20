@@ -1,4 +1,7 @@
+import argparse
 import logging
+import os
+import sys
 
 from .base import BaseCommand
 from ..config import Config
@@ -11,29 +14,42 @@ logger = logging.getLogger(__name__)
 class CreateReposCommand(BaseCommand):
     NAME = 'create-repos'
     HELP = 'create student repos'
-    OPTIONS = [
-        (('-m', '--mutation'), {help: 'name of mutator'}),
-    ]
+
+    def populate_args(self):
+        self.add_argument('students', nargs='?', type=argparse.FileType('r'),
+                          default=sys.stdin)
 
     def run(self, args):
-        mutation = self.prompt(args, 'mutation')
+        if args.students == sys.stdin:
+            if sys.stdout.isatty():
+                print('Please enter students emails and GitHub names one per ' +
+                      'line separated by a space')
+                print('Repos will be created after EOF')
 
-        # make sure that the requested mutation actully exists
+        students = args.students.readlines()
+        students = [s.strip().split(' ') for s in students]
+        students = [Student(email=s[0], github=s[1]) for s in students]
+
+        logger.info('Creating repos for %d students', len(students))
 
         config = Config.load_config()
 
-        # TODO(vmagro): load students from a file in the meta repo
-        students = [
-            Student(email='smagro@usc.edu', github='vmagro'),
-        ]
-        logger.info('Loaded %d students', len(students))
+        # make a commit with the new students in the meta repo
+        meta_repo = Repo.meta_repo()
+        cwd = os.getcwd()
+        os.chdir(config.meta_path)
 
-        # clone all the repos first
-        def clone(student):
-            path = Repo.clone_student_repo(student)
-            return student, path
-        repos = [clone(s) for s in students]
+        with open('students.txt', 'a') as github_file:
+            lines = [s.email + ' ' + s.github for s in students]
+            github_file.writelines(lines)
 
-        for student, repo_path in repos:
-            logger.info('Mutating repo: %s', student.github)
-            pass
+        logger.debug('Adding students.txt to index')
+        meta_repo.index.add('students.txt')
+        logger.debug('Commiting changes')
+        meta_repo.index.commit('Added {} students'.format(len(students)))
+        logger.debug('Pushing to remote')
+        meta_repo.remote().push()
+
+        os.chdir(cwd)
+
+        logger.info('Created repos, pushed updated meta to GitHub')

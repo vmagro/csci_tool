@@ -11,14 +11,14 @@ logger = logging.getLogger(__name__)
 class MutateCommand(BaseCommand):
     NAME = 'mutate'
     HELP = 'update student repos'
-    OPTIONS = [
-        (('-m', '--mutation'), {help: 'name of mutator'}),
-    ]
+
+    def populate_args(self):
+        self.add_argument('mutation', help='name of mutator')
 
     def run(self, args):
         mutation = self.prompt(args, 'mutation')
 
-        # make sure that the requested mutation actully exists
+        # make sure that the requested mutation actually exists
 
         config = Config.load_config()
 

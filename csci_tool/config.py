@@ -102,23 +102,32 @@ class Config(object):
         self._config['user']['email'] = email
 
     @property
-    def template_repo(self):
-        """Path to template git repo"""
-        return self._config['template']['path']
+    def meta_name(self):
+        """Name for meta git repo (in the GitHub organization)"""
+        return self._config['meta_repo_name']
 
-    @template_repo.setter
-    def template_repo(self, url):
-        if 'template' not in self._config:
-            self._config['template'] = {}
-        self._config['template']['path'] = url
+    @meta_name.setter
+    def meta_name(self, name):
+        self._config['meta_repo_name'] = name
+
+    @property
+    def meta_path(self):
+        """Path to meta git repo"""
+        # lives in a subdirectory next to .cscirc
+        dir_name = self.github_org + '_' + self.meta_name
+        return path.join(path.dirname(self.path), dir_name)
+
+    @property
+    def meta_remote(self):
+        """Git remote URL to meta repo"""
+        return 'git@github.com/' + \
+            self.github_org + '/' + self.meta_name + '.git'
 
     @property
     def github_org(self):
         """Name of github org (eg ctcusc for github.com/ctcusc"""
-        return self._config['github']['org']
+        return self._config['github_org']
 
     @github_org.setter
     def github_org(self, org):
-        if 'github' not in self._config:
-            self._config['github'] = {}
-        self._config['github']['org'] = org
+        self._config['github_org'] = org

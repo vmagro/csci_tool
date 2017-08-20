@@ -2,6 +2,10 @@ import logging
 import tempfile
 from git import Repo as GitRepo
 
+
+from .config import Config
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -43,3 +47,14 @@ class Repo(object):
         logger.debug('%s -> %s', repo_url, tempdir)
         GitRepo.clone_from(repo_url, tempdir)
         return tempdir
+
+    @staticmethod
+    def meta_repo():
+        """Get a reference to the meta repo that contains the templates and
+        lists of students
+
+        Returns:
+            git.Repo: metadata repo
+        """
+        config = Config.load_config()
+        return GitRepo(config.meta_path)

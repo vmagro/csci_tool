@@ -1,4 +1,5 @@
 import errno
+from git import Repo as GitRepo
 import logging
 import os
 from os import path
@@ -6,6 +7,7 @@ import sys
 
 from .base import BaseCommand
 from ..config import Config
+from ..repo import Repo
 
 logger = logging.getLogger(__name__)
 
@@ -40,8 +42,12 @@ class InitCommand(BaseCommand):
         config.github = github
         config.email = email
         # TODO(vmagro) make generic for different classes
-        config.template_repo = 'https://github.com/usc_csci356_fall17/template'
+        config.meta_name = 'meta'
         config.github_org = 'usc_csci356_fall17'
 
         logger.debug('Writing config to %s', config_path)
         config.save()
+
+        logger.info('Cloning meta repo into %s', config.meta_path)
+        GitRepo.clone_from(config.meta_remote, config.meta_path)
+        logger.info('Cloned meta repo')
