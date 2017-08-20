@@ -13,12 +13,10 @@ logger = logging.getLogger(__name__)
 class InitCommand(BaseCommand):
     NAME = 'init'
     HELP = 'login to admin a course'
-    OPTIONS = [
-        (('-g', '--github'), {help: 'GitHub username'}),
-        (('-e', '--email'), {help: 'USC email'}),
-        # TODO(vmagro) make generic for different classes
-        # ('-c', '--course', 'CSCI course number (eg 356)'),
-    ]
+
+    def populate_args(self):
+        self.add_argument('-g', '--github', help='GitHub username')
+        self.add_argument('-e', '--email', help='USC email')
 
     def run(self, args):
         github = self.prompt(args, 'github')

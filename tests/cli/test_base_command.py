@@ -9,6 +9,13 @@ from csci_tool.commands.base import BaseCommand
 def base_cmd():
     return BaseCommand()
 
+@fixture
+def subparsers():
+    subparsers = MagicMock()
+    parser = MagicMock()
+    subparsers.add_parser.return_value = parser
+    return subparsers, parser
+
 
 def test_prompt_cmd(base_cmd):
     """Picks variables out of command line args"""
@@ -27,32 +34,39 @@ def test_prompt_input(base_cmd, mocker):
     builtins.input.assert_called_once_with('interactively: ')
 
 
-def test_prompt_input_help(base_cmd, mocker):
+def test_prompt_input_help(subparsers, mocker):
     """help is printed when using input()"""
-    base_cmd.OPTIONS = [
-        ('-e', '--example', 'example argument')
-    ]
+    subparsers, parser = subparsers
+    class Sub(BaseCommand):
+        NAME = 'base_test'
+        HELP = 'base test help'
+
+        def populate_args(self):
+            self.add_argument('-e', '--example', help='example argument')
+
+    cmd = Sub()
+    cmd.populate_parser(subparsers)
 
     mocker.patch('builtins.input')
     mock_args = MagicMock()
     builtins.input.return_value = 'from user input'
     del mock_args.example
-    assert base_cmd.prompt(mock_args, 'example') == 'from user input'
+    assert cmd.prompt(mock_args, 'example') == 'from user input'
     builtins.input.assert_called_once_with('example argument: ')
 
 
-def test_populate_parser(base_cmd):
+def test_populate_parser(subparsers):
     """Populates subparser correctly"""
-    base_cmd.NAME = 'base_test'
-    base_cmd.HELP = 'base test help'
-    base_cmd.OPTIONS = [
-        ('-e', '--example', 'example argument')
-    ]
-    subparsers = MagicMock()
-    parser = MagicMock()
-    subparsers.add_parser.return_value = parser
+    subparsers, parser = subparsers
+    class Sub(BaseCommand):
+        NAME = 'base_test'
+        HELP = 'base test help'
 
-    base_cmd.populate_parser(subparsers)
+        def populate_args(self):
+            self.add_argument('-e', '--example', help='example argument')
+
+    cmd = Sub()
+    cmd.populate_parser(subparsers)
 
     subparsers.add_parser.assert_called_once_with(
         'base_test', help='base test help'
