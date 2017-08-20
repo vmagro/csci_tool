@@ -32,6 +32,11 @@ class CreateReposCommand(BaseCommand):
 
         logger.info('Creating repos for %d students', len(students))
 
+        for student in students:
+            # call github api to create student repo
+            # TODO(vmagro)
+            pass
+
         config = Config.load_config()
 
         # make a commit with the new students in the meta repo
