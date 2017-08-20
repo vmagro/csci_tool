@@ -24,11 +24,17 @@ class CreateReposCommand(BaseCommand):
             if sys.stdout.isatty():
                 print('Please enter students emails and GitHub names one per ' +
                       'line separated by a space')
-                print('Repos will be created after EOF')
+                print('Repos will be created after EOF\n')
 
         students = args.students.readlines()
-        students = [s.strip().split(' ') for s in students]
+        students = [s.strip() for s in students]
+        students = [s for s in students if s]  # filter out empty lines
+        students = [s.split(' ') for s in students]
         students = [Student(email=s[0], github=s[1]) for s in students]
+
+        if len(students) == 0:
+            print('No student data found, not creating repos')
+            return
 
         logger.info('Creating repos for %d students', len(students))
 
