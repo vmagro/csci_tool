@@ -38,23 +38,7 @@ class MutateCommand(BaseCommand):
 
         meta_dir = Repo.meta_repo().working_tree_dir
 
-        # load student info from meta repo text file
-        try:
-            # allow passing students file in as an argument to only mutate
-            # certain repos - default to the meta repo students.txt
-            students_file = args.students
-            if students_file is None:
-                students_file = open(path.join(meta_dir, 'students.txt'), 'r')
-
-            students = students_file.readlines()
-            students = [s.strip() for s in students]
-            students = [s for s in students if s]  # filter out empty lines
-            students = [s.split(' ') for s in students]
-            students = [Student(email=s[0], github=s[1]) for s in students]
-        except OSError as e:
-            if e.errno == errno.ENOENT:
-                l.warning('No students.txt found, no changes will be made')
-            raise
+        students = self.load_students(args)
 
         l.info('Loaded %d students', len(students))
 

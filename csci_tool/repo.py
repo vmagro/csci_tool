@@ -22,21 +22,22 @@ class Repo(object):
         self.path = path
 
     @staticmethod
-    def clone_student_repo(student):
+    def clone_student_repo(student, dest=None):
         """Clones a student repo into a temporary directory
 
         Arguments:
             student (Student)
 
         Returns:
-            PathLike: path to temporary directory where repo was cloned
+            git.Repo: repo at the cloned path
         """
         logger.info('Cloning repo: %s', student.github)
-        tempdir = tempfile.mkdtemp()
+        if dest is None:
+            dest = tempfile.mkdtemp()
         repo_url = student.repo_url
-        logger.debug('%s -> %s', repo_url, tempdir)
-        GitRepo.clone_from(repo_url, tempdir)
-        return tempdir
+        logger.debug('%s -> %s', repo_url, dest)
+        GitRepo.clone_from(repo_url, dest)
+        return GitRepo(dest)
 
     @staticmethod
     def meta_repo():

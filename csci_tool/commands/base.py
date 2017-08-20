@@ -1,3 +1,14 @@
+import errno
+import logging
+from os import path
+
+from ..repo import Repo
+from ..student import Student
+
+
+logger = logging.getLogger(__name__)
+
+
 class BaseCommand(object):
     """Superclass for all subcommands in csci_tool
     Provides some conveniences to read arguments from the user interactively or
@@ -52,3 +63,30 @@ class BaseCommand(object):
             return getattr(args, key)
         else:
             return input('{}: '.format(help))
+
+    def load_students(self, args):
+        """Load student info from a file 'students' in args or from the
+        students.txt in the meta repo
+
+        Returns:
+            list of Student
+        """
+        # load student info from meta repo text file
+        try:
+            # allow passing students file in as an argument to only mutate
+            # certain repos - default to the meta repo students.txt
+            students_file = args.students
+            if students_file is None:
+                meta_dir = Repo.meta_repo().working_tree_dir
+                students_file = open(path.join(meta_dir, 'students.txt'), 'r')
+
+            students = students_file.readlines()
+            students = [s.strip() for s in students]
+            students = [s for s in students if s]  # filter out empty lines
+            students = [s.split(' ') for s in students]
+            students = [Student(email=s[0], github=s[1]) for s in students]
+        except OSError as e:
+            if e.errno == errno.ENOENT:
+                logger.warning('No students.txt found, no changes will be made')
+            raise
+        return students
