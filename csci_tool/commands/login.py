@@ -7,7 +7,6 @@ import sys
 
 from .base import BaseCommand
 from ..config import Config
-from ..repo import Repo
 
 logger = logging.getLogger(__name__)
 
