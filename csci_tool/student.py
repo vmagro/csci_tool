@@ -17,9 +17,9 @@ class Student(object):
     @property
     def repo_url(self):
         """URL to student repo"""
-        repo_name = 'hw_' + self.github
+        repo_name = 'hw_' + self.unix_name
         config = Config.load_config()
-        return 'git@github.com:' + \
+        return 'ssh://git@github.com:' + \
             config.github_org + '/' + repo_name + '.git'
 
     @property

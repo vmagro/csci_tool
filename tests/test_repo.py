@@ -14,5 +14,5 @@ def test_clone_student_repo(mocker, config):
     s = Student(email='smagro@usc.edu', github='vmagro')
     tempdir = Repo.clone_student_repo(s)
     git.Repo.clone_from.assert_called_once_with(
-        'git@github.com:test_org/hw_vmagro.git',
+        'ssh://git@github.com:test_org/hw_smagro.git',
         tempdir)
