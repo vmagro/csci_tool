@@ -16,6 +16,7 @@ from os import path
 
 
 logger = logging.getLogger(__name__)
+logger.setLevel(30)  # config logs are really noisy
 
 
 class Config(object):
