@@ -3,6 +3,7 @@ import logging
 from os import path
 
 from .base import BaseCommand
+from .config import Config
 from ..repo import Repo
 
 
@@ -22,9 +23,11 @@ class CollectCommand(BaseCommand):
     def run(self, args):
         assignment = args.assignment
         students = self.load_students(args.students)
-        logger.info('Collecting from %d students', len(students))
+        logger.info('Collecting %s from %d students', assignment, len(students))
 
         meta_repo = Repo.meta_repo()
+        config = Config.load_config()
+        github = config.github
 
         for student in students:
             dest_dir = path.join('submissions', assignment, student.unix_name)
@@ -38,6 +41,17 @@ class CollectCommand(BaseCommand):
             logger.info('Collected %s at %s into %s', student.unix_name,
                         sub.hexsha, dest_dir)
 
-        meta_repo.index.commit('Collecting {} from {} students'
+            # comment on the commit that we collected
+            repo = github.get_repo(config.github_org, student.repo_name)
+            commit = repo.get_commits(sha=sub.hexsha)[0]
+            comment = '''
+This commit was collected as part of {}.
+If youi think this was a mistake or you want to submit this assignment late,
+please fill out the late form.'''.format(assignment)
+            commit.create_comment(comment)
+
+        # commit all the submissions at once
+
+        meta_repo.index.commit('Collected {} from {} students'
                                .format(assignment, len(students)))
         meta_repo.remote().push()
