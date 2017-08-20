@@ -52,12 +52,9 @@ class MutateCommand(BaseCommand):
             students = [s.split(' ') for s in students]
             students = [Student(email=s[0], github=s[1]) for s in students]
         except OSError as e:
-            if e.errno != errno.ENOENT:
-                raise
-            else:
+            if e.errno == errno.ENOENT:
                 l.warning('No students.txt found, no changes will be made')
-                raise
-                return
+            raise
 
         l.info('Loaded %d students', len(students))
 
