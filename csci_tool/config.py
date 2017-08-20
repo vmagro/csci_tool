@@ -103,6 +103,11 @@ class Config(object):
         self._config['user']['email'] = email
 
     @property
+    def unix_name(self):
+        """USC Unix name AKA prefix of email"""
+        return self.email[:-len('@usc.edu')]
+
+    @property
     def meta_name(self):
         """Name for meta git repo (in the GitHub organization)"""
         return self._config['repo']['meta_name']
