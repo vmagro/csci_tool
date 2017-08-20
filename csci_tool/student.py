@@ -19,7 +19,7 @@ class Student(object):
         """URL to student repo"""
         repo_name = 'hw_' + self.unix_name
         config = Config.load_config()
-        return 'ssh://git@github.com:' + \
+        return 'git@github.com:' + \
             config.github_org + '/' + repo_name + '.git'
 
     @property

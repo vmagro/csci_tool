@@ -38,7 +38,6 @@ class CollectCommand(BaseCommand):
             logger.info('Collected %s at %s into %s', student.unix_name,
                         sub.hexsha, dest_dir)
 
-        meta_repo.index.add([path.join('submissions', assignment)])
         meta_repo.index.commit('Collecting {} from {} students'
                                .format(assignment, len(students)))
         meta_repo.remote().push()

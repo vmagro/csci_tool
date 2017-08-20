@@ -38,7 +38,7 @@ class LoginCommand(BaseCommand):
         config_path = path.join(path.expanduser('~'), '.csci', 'cscirc')
 
         config = Config(config_path)
-        config.github = github
+        config.github_login = github
         config.email = email
         # TODO(vmagro) make generic for different classes
         config.meta_name = 'meta'

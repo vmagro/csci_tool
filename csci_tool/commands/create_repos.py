@@ -36,9 +36,11 @@ class CreateReposCommand(BaseCommand):
 
         # deduplicate based on existing students.txt
         config = Config.load_config()
+        meta_repo = Repo.meta_repo()
+        meta_dir = meta_repo.working_tree_dir
 
         try:
-            with open(path.join(config.meta_path, 'students.txt'), 'r') as f:
+            with open(path.join(meta_dir, 'students.txt'), 'r') as f:
                 existing = f.readlines()
                 existing = [e.strip().split(' ') for e in existing]
                 existing = [Student(email=s[0], github=s[1]) for s in existing]
@@ -60,13 +62,20 @@ class CreateReposCommand(BaseCommand):
 
         logger.info('Creating repos for %d students', len(students))
 
+        github = config.github
+        org = github.get_organization(config.github_org)
+
         for student in students:
             # call github api to create student repo
-            # TODO(vmagro)
-            pass
+            logger.info('Creating repo hw_%s', student.unix_name)
+            repo = org.create_repo('hw_' + student.unix_name,
+                                   'Homework for {}'.format(student.email),
+                                   # private=True,
+                                  )
+            logger.info('Adding %s to collaborators', student.github)
+            repo.add_to_collaborators(student.github)
 
         # make a commit with the new students in the meta repo
-        meta_repo = Repo.meta_repo()
         cwd = os.getcwd()
         os.chdir(config.meta_path)
 

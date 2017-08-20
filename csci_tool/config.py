@@ -10,6 +10,7 @@ reaches '/', then looks in the user's homedir
 
 from configparser import ConfigParser
 import errno
+from github import Github
 import logging
 import os
 from os import path
@@ -83,11 +84,11 @@ class Config(object):
             self._config.write(config_file)
 
     @property
-    def github(self):
+    def github_login(self):
         return self._config['user']['github']
 
-    @github.setter
-    def github(self, github):
+    @github_login.setter
+    def github_login(self, github):
         if 'user' not in self._config:
             self._config['user'] = {}
         self._config['user']['github'] = github
@@ -106,6 +107,17 @@ class Config(object):
     def unix_name(self):
         """USC Unix name AKA prefix of email"""
         return self.email[:-len('@usc.edu')]
+
+    @property
+    def github(self):
+        """Logged in instance of Github from PyGithub"""
+        return Github(self.github_login, self._config['user']['github_access'])
+
+    @github.setter
+    def github(self, access):
+        if 'user' not in self._config:
+            self._config['user'] = {}
+        self._config['user']['github_access'] = access
 
     @property
     def meta_name(self):
@@ -128,7 +140,7 @@ class Config(object):
     @property
     def meta_remote(self):
         """Git remote URL to meta repo"""
-        return 'ssh://git@github.com/' + \
+        return 'git@github.com:' + \
             self.github_org + '/' + self.meta_name + '.git'
 
     @property
