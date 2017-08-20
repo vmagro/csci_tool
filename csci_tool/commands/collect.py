@@ -21,7 +21,7 @@ class CollectCommand(BaseCommand):
 
     def run(self, args):
         assignment = args.assignment
-        students = self.load_students(args)
+        students = self.load_students(args.students)
         logger.info('Collecting from %d students', len(students))
 
         meta_repo = Repo.meta_repo()

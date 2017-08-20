@@ -65,9 +65,9 @@ class BaseCommand(object):
         else:
             return input('{}: '.format(help))
 
-    def load_students(self, args):
-        """Load student info from a file 'students' in args or from the
-        students.txt in the meta repo
+    def load_students(self, students_file=None):
+        """Load student info from an input stream or defaulting to students.txt
+        in meta repo
 
         Returns:
             list of Student
@@ -76,7 +76,6 @@ class BaseCommand(object):
         try:
             # allow passing students file in as an argument to only mutate
             # certain repos - default to the meta repo students.txt
-            students_file = args.students
             if students_file == sys.stdin:
                 print('Please enter students emails and GitHub names one per ' +
                       'line separated by a space')

@@ -38,7 +38,7 @@ class MutateCommand(BaseCommand):
 
         meta_dir = Repo.meta_repo().working_tree_dir
 
-        students = self.load_students(args)
+        students = self.load_students(args.students)
 
         l.info('Loaded %d students', len(students))
 
