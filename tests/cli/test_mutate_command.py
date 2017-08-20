@@ -17,7 +17,7 @@ def test_clone(mocker):
     cmd = MutateCommand()
     cmd.run(args)
 
-    Repo.clone_student_repo.assert_called_once_with('ssh://git@github.com:usc_csci356_fall17/hw_smagro.git')
+    Repo.clone_student_repo.assert_called_once_with('git@github.com:usc_csci356_fall17/hw_smagro.git')
 
 
 def test_load_mutation(mocker):

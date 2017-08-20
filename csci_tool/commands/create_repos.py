@@ -67,8 +67,8 @@ class CreateReposCommand(BaseCommand):
 
         for student in students:
             # call github api to create student repo
-            logger.info('Creating repo hw_%s', student.unix_name)
-            repo = org.create_repo('hw_' + student.unix_name,
+            logger.info('Creating repo %s', student.repo_name)
+            repo = org.create_repo(student.repo_name,
                                    'Homework for {}'.format(student.email),
                                    # private=True,
                                   )

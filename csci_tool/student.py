@@ -17,15 +17,19 @@ class Student(object):
     @property
     def repo_url(self):
         """URL to student repo"""
-        repo_name = 'hw_' + self.unix_name
         config = Config.load_config()
         return 'git@github.com:' + \
-            config.github_org + '/' + repo_name + '.git'
+            config.github_org + '/' + self.repo_name + '.git'
 
     @property
     def unix_name(self):
         """USC Unix name AKA prefix of email"""
         return self.email[:-len('@usc.edu')]
+
+    @property
+    def repo_name(self):
+        """Repo name in the organization"""
+        return 'hw_' + self.unix_name
 
     def __str(self):
         return self.github + ' <' + self.email + '>'
