@@ -40,7 +40,7 @@ class CreateReposCommand(BaseCommand):
         os.chdir(config.meta_path)
 
         with open('students.txt', 'a') as github_file:
-            lines = [s.email + ' ' + s.github for s in students]
+            lines = [s.email + ' ' + s.github + '\n' for s in students]
             github_file.writelines(lines)
 
         logger.debug('Adding students.txt to index')
