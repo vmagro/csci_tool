@@ -5,8 +5,6 @@ import os
 
 from .repo import Repo
 
-Mutation = namedtuple('Mutation', 'commit_message')
-
 logger = logging.getLogger(__name__)
 
 
@@ -21,7 +19,7 @@ class Mutator():
     Mutators should live in a subdirectory of the template repo and be named
     'mutate.py' which will automatically be run by the CLI.
 
-    Mutators must implement a function mute as described below:
+    Mutators must implement a function mutate as described below:
         mutate changes the working copy of a student repo
         There is no need to commit the changes, the mutation runner will run the
         mutator, then commit the changes.
@@ -32,8 +30,6 @@ class Mutator():
         Arguments:
             student (Student)
             source_dir (PathLike): directory where mutate.py lives
-        Returns:
-            Mutation: metadata about what was changed
     """
 
     @staticmethod
