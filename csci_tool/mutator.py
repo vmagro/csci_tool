@@ -31,6 +31,7 @@ class Mutator():
 
         Arguments:
             student (Student)
+            source_dir (PathLike): directory where mutate.py lives
         Returns:
             Mutation: metadata about what was changed
     """
