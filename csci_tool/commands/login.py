@@ -12,8 +12,8 @@ from ..repo import Repo
 logger = logging.getLogger(__name__)
 
 
-class InitCommand(BaseCommand):
-    NAME = 'init'
+class LoginCommand(BaseCommand):
+    NAME = 'login'
     HELP = 'login to admin a course'
 
     def populate_args(self):
@@ -30,13 +30,13 @@ class InitCommand(BaseCommand):
         # course_number = self.prompt(args, 'course')
 
         # save the user information to the config file
-        # save into ~/.csci/.cscirc by default
+        # save into ~/.csci/cscirc by default
         try:
             os.mkdir(path.join(path.expanduser('~'), '.csci'))
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
-        config_path = path.join(path.expanduser('~'), '.csci', '.cscirc')
+        config_path = path.join(path.expanduser('~'), '.csci', 'cscirc')
 
         config = Config(config_path)
         config.github = github

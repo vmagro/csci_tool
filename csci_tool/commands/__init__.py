@@ -1,9 +1,9 @@
 from .create_repos import CreateReposCommand
-from .init import InitCommand
+from .login import LoginCommand
 from .mutate import MutateCommand
 
 subcommands = [
     CreateReposCommand(),
-    InitCommand(),
+    LoginCommand(),
     MutateCommand(),
 ]
