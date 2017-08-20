@@ -1,11 +1,16 @@
+import argparse
+import errno
+from git import Repo as GitRepo
 import logging
+import os
+from os import path
 
 from .base import BaseCommand
-from ..config import Config
+from ..mutator import Mutator
 from ..repo import Repo
 from ..student import Student
 
-logger = logging.getLogger(__name__)
+l = logging.getLogger(__name__)
 
 
 class MutateCommand(BaseCommand):
@@ -14,26 +19,77 @@ class MutateCommand(BaseCommand):
 
     def populate_args(self):
         self.add_argument('mutation', help='name of mutator')
+        self.add_argument('students', help='students file', nargs='?',
+                          type=argparse.FileType('r'),
+                          default=None)
 
     def run(self, args):
-        mutation = self.prompt(args, 'mutation')
+        mutation_name = self.prompt(args, 'mutation')
 
-        # make sure that the requested mutation actually exists
+        try:
+            mutate = Mutator.get_mutator(mutation_name)
+        except AttributeError:
+            l.error('mutate.py doesn\'t seem to have a mutate function')
+            return
+        except:
+            l.error('Failed to import mutator "%s", are you sure it exists?',
+                    mutation_name)
+            return
 
-        config = Config.load_config()
+        meta_dir = Repo.meta_repo().working_tree_dir
 
-        # TODO(vmagro): load students from a file in the meta repo
-        students = [
-            Student(email='smagro@usc.edu', github='vmagro'),
-        ]
-        logger.info('Loaded %d students', len(students))
+        # load student info from meta repo text file
+        try:
+            # allow passing students file in as an argument to only mutate
+            # certain repos - default to the meta repo students.txt
+            students_file = args.students
+            if students_file is None:
+                students_file = open(path.join(meta_dir, 'students.txt'), 'r')
+
+            students = students_file.readlines()
+            students = [s.strip() for s in students]
+            students = [s for s in students if s]  # filter out empty lines
+            students = [s.split(' ') for s in students]
+            students = [Student(email=s[0], github=s[1]) for s in students]
+        except OSError as e:
+            if e.errno != errno.ENOENT:
+                raise
+            else:
+                l.warning('No students.txt found, no changes will be made')
+                raise
+                return
+
+        l.info('Loaded %d students', len(students))
 
         # clone all the repos first
         def clone(student):
-            path = Repo.clone_student_repo(student)
+            try:
+                path = Repo.clone_student_repo(student)
+            except:
+                l.error('Failed to clone repo, does it exist and is your ' +
+                        'internet connection working?')
+                raise
             return student, path
-        repos = [clone(s) for s in students]
+        try:
+            repos = [clone(s) for s in students]
+        except:
+            l.error('Cloning one or more repos failed')
+            return
 
+        # make the changes
         for student, repo_path in repos:
-            logger.info('Mutating repo: %s', student.github)
-            pass
+            l.info('Mutating repo: %s', student.unix_name)
+            cwd = os.getcwd()
+            os.chdir(repo_path)
+            mutate(student)
+            os.chdir(cwd)
+
+        # commit and push our changes
+        for student, repo_path in repos:
+            l.info('Committing repo: %s', student.unix_name)
+            repo = GitRepo(repo_path)
+            repo.index.add('.')
+            repo.index.commit('[course staff] ' + mutation_name)
+            l.info('Pushing repo: %s', student.unix_name)
+            repo.remote().push()
+            l.info('Pushed repo: %s', student.unx_name)
