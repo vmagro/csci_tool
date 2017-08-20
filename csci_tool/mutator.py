@@ -1,8 +1,13 @@
 from collections import namedtuple
 import importlib.util
+import logging
 import os
 
+from .repo import Repo
+
 Mutation = namedtuple('Mutation', 'commit_message')
+
+logger = logging.getLogger(__name__)
 
 
 class Mutator():
@@ -39,9 +44,11 @@ class Mutator():
         Returns:
             function: mutator loaded from mutate.py (function named mutate)
         """
-        template_dir = '/Users/vmagro/tmp/csci_356_template/'
-        spec = importlib.util.spec_from_file_location(
-            name + '.mutate', os.path.join(template_dir, name, 'mutate.py'))
+        template_dir = Repo.meta_repo().working_tree_dir
+        py_path = os.path.join(template_dir, name, 'mutate.py')
+        logger.info('Loading mutator from %s', py_path)
+        spec = importlib.util.spec_from_file_location(name + '.mutate', py_path)
         mutate = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mutate)
-        return mutate
+        logger.info('Imported %s', py_path)
+        return mutate.mutate

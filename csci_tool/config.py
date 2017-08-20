@@ -104,11 +104,13 @@ class Config(object):
     @property
     def meta_name(self):
         """Name for meta git repo (in the GitHub organization)"""
-        return self._config['meta_repo_name']
+        return self._config['repo']['meta_name']
 
     @meta_name.setter
     def meta_name(self, name):
-        self._config['meta_repo_name'] = name
+        if 'repo' not in self._config:
+            self._config['repo'] = {}
+        self._config['repo']['meta_name'] = name
 
     @property
     def meta_path(self):
@@ -120,14 +122,16 @@ class Config(object):
     @property
     def meta_remote(self):
         """Git remote URL to meta repo"""
-        return 'git@github.com/' + \
+        return 'ssh://git@github.com/' + \
             self.github_org + '/' + self.meta_name + '.git'
 
     @property
     def github_org(self):
         """Name of github org (eg ctcusc for github.com/ctcusc"""
-        return self._config['github_org']
+        return self._config['repo']['github_org']
 
     @github_org.setter
     def github_org(self, org):
-        self._config['github_org'] = org
+        if 'repo' not in self._config:
+            self._config['repo'] = {}
+        self._config['repo']['github_org'] = org

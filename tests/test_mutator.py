@@ -3,7 +3,7 @@ from csci_tool.mutator import Mutator
 
 def test_load(fs):
     """Loads mutator from subdirectory"""
-    fs.CreateFile('/Users/vmagro/tmp/csci_356_template/test/mutate.py',
+    fs.CreateFile('/Users/vmagro/tmp/csci_356_meta/test/mutate.py',
                   contents='''
 def mutate(student):
     pass

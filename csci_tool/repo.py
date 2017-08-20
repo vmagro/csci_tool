@@ -20,16 +20,6 @@ class Repo(object):
 
     def __init__(self, path, config):
         self.path = path
-        self.template_remote = config.template_url
-
-    @staticmethod
-    def get_template_repo_url(course_name):
-        """Get template repo for course name.
-        Returns:
-            (str) URL to the GitHub repo with the course template
-        """
-        # TODO(vmagro) make this generic for different classes
-        return 'https://github.com/vmagrotest/csci_356_template/'
 
     @staticmethod
     def clone_student_repo(student):
