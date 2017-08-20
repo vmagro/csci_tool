@@ -1,6 +1,7 @@
 import errno
 import logging
 from os import path
+import sys
 
 from ..repo import Repo
 from ..student import Student
@@ -76,6 +77,10 @@ class BaseCommand(object):
             # allow passing students file in as an argument to only mutate
             # certain repos - default to the meta repo students.txt
             students_file = args.students
+            if students_file == sys.stdin:
+                print('Please enter students emails and GitHub names one per ' +
+                      'line separated by a space')
+                print('Repos will be collected after EOF\n')
             if students_file is None:
                 meta_dir = Repo.meta_repo().working_tree_dir
                 students_file = open(path.join(meta_dir, 'students.txt'), 'r')

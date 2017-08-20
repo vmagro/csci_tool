@@ -28,7 +28,7 @@ class CollectCommand(BaseCommand):
 
         for student in students:
             dest_dir = path.join('submissions', assignment, student.unix_name)
-            # just add a submodule
+            # just add a submodule rather than downloading the whole repo
             sub = meta_repo.create_submodule(
                 name='{}_{}'.format(assignment, student.unix_name),
                 path=dest_dir,
