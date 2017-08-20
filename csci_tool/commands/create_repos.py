@@ -1,6 +1,8 @@
 import argparse
+import errno
 import logging
 import os
+from os import path
 import sys
 
 from .base import BaseCommand
@@ -32,6 +34,26 @@ class CreateReposCommand(BaseCommand):
         students = [s.split(' ') for s in students]
         students = [Student(email=s[0], github=s[1]) for s in students]
 
+        # deduplicate based on existing students.txt
+        config = Config.load_config()
+
+        try:
+            with open(path.join(config.meta_path, 'students.txt'), 'r') as f:
+                existing = f.readlines()
+                existing = [e.strip().split(' ') for e in existing]
+                existing = [Student(email=s[0], github=s[1]) for s in existing]
+                existing = {s.email for s in existing}
+
+                # now dedup based on the existing set
+                orig = len(students)
+                students = [s for s in students if s.email not in existing]
+                logger.debug('Removed %d students already present',
+                             orig - len(students))
+        except OSError as e:
+            if e.errno != errno.ENOENT:
+                raise
+
+        # now that we've deduplicated, make any changes
         if len(students) == 0:
             print('No student data found, not creating repos')
             return
@@ -43,8 +65,6 @@ class CreateReposCommand(BaseCommand):
             # TODO(vmagro)
             pass
 
-        config = Config.load_config()
-
         # make a commit with the new students in the meta repo
         meta_repo = Repo.meta_repo()
         cwd = os.getcwd()
@@ -55,7 +75,7 @@ class CreateReposCommand(BaseCommand):
             github_file.writelines(lines)
 
         logger.debug('Adding students.txt to index')
-        meta_repo.index.add('students.txt')
+        meta_repo.index.add(['students.txt'])
         logger.debug('Commiting changes')
         meta_repo.index.commit('Added {} students'.format(len(students)))
         logger.debug('Pushing to remote')
