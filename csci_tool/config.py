@@ -67,8 +67,8 @@ class Config(object):
         elif path.dirname(d) == d:
             # don't go up past /
             # default to ~/.csci/.cscirc
-            logger.debug('Defaulting to config ~/.csci/.cscirc')
-            return path.join(path.expanduser('~'), '.csci', '.cscirc')
+            logger.debug('Defaulting to config ~/.csci/cscirc')
+            return path.join(path.expanduser('~'), '.csci', 'cscirc')
         else:
             parent = path.dirname(d)
             logger.debug('Didn\'t find .cscirc in %s, checking %s', d, parent)

@@ -7,12 +7,12 @@ FileNotFoundError = OSError
 
 
 def test_not_found(fs):
-    """find_config defaults to ~/.cscirc"""
+    """find_config defaults to ~/.csci/cscirc"""
     fs.MakeDirectories('/test/config/project/subdir')
     os.chdir('/test/config/project/subdir')
     d = os.getcwd()
     c = Config.find_config(d)
-    assert c == os.path.join(os.path.expanduser('~'), '.csci', '.cscirc')
+    assert c == os.path.join(os.path.expanduser('~'), '.csci', 'cscirc')
 
 
 def test_cwd(fs):
