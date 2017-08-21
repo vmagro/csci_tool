@@ -34,7 +34,7 @@ human grading'
             # students.txt then use the students.txt generated for the current
             # grader by their USC unix name
             my_name = Config.load_config().unix_name
-            default = path.join(meta_dir, 'submissions', 'assingment',
+            default = path.join(meta_dir, 'submissions', assignment,
                                 'grade_' + my_name + '.txt')
             print('Loading students to grade for ' + my_name)
             with open(default, 'r') as students_file:
