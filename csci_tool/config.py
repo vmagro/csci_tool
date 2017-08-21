@@ -109,6 +109,17 @@ class Config(object):
         return self.email[:-len('@usc.edu')]
 
     @property
+    def github_org(self):
+        """Name of github org (eg ctcusc for github.com/ctcusc"""
+        return self._config['repo']['github_org']
+
+    @github_org.setter
+    def github_org(self, org):
+        if 'repo' not in self._config:
+            self._config['repo'] = {}
+        self._config['repo']['github_org'] = org
+
+    @property
     def github(self):
         """Logged in instance of Github from PyGithub"""
         return Github(self.github_login, self._config['user']['github_access'])
@@ -118,6 +129,11 @@ class Config(object):
         if 'user' not in self._config:
             self._config['user'] = {}
         self._config['user']['github_access'] = access
+
+    @property
+    def ssh_key(self):
+        """Optional custom ssh key file"""
+        return self._config['user'].get('ssh_key', None)
 
     @property
     def meta_name(self):
@@ -142,14 +158,3 @@ class Config(object):
         """Git remote URL to meta repo"""
         return 'git@github.com:' + \
             self.github_org + '/' + self.meta_name + '.git'
-
-    @property
-    def github_org(self):
-        """Name of github org (eg ctcusc for github.com/ctcusc"""
-        return self._config['repo']['github_org']
-
-    @github_org.setter
-    def github_org(self, org):
-        if 'repo' not in self._config:
-            self._config['repo'] = {}
-        self._config['repo']['github_org'] = org
