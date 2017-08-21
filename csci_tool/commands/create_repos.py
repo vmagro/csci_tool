@@ -64,6 +64,16 @@ class CreateReposCommand(BaseCommand):
 
         github = config.github
         org = github.get_organization(config.github_org)
+        grader_team = None
+        teams = org.get_teams()
+        for team in teams:
+            if team.name == 'graders':
+                grader_team = team
+
+        if grader_team is None:
+            logger.error('Failed to find grader team, make sure the team \
+                         \'graders\' exists in the GitHub org and try again')
+            return
 
         for student in students:
             # call github api to create student repo
@@ -74,6 +84,8 @@ class CreateReposCommand(BaseCommand):
                                   )
             logger.info('Adding %s to collaborators', student.github)
             repo.add_to_collaborators(student.github)
+            logger.info('Adding to graders team')
+            grader_team.add_to_repos(repo)
 
         # make a commit with the new students in the meta repo
         cwd = os.getcwd()

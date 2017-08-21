@@ -24,6 +24,13 @@ Usage
 First login - necessary before you can do anything useful  
 `csci login`
 
+Create repos for students:  
+`csci create-repos students.txt` where students.txt is a text file where each
+line is a student's information like so: `smagro@usc.edu vmagro` (email and
+github username). If no file is specified, the tool will read from stdin.  
+This will create a repo for each student like `hw_smagro`, add the student to
+it's contributors and add the CP team as contributors.
+
 Run a given mutator on all student repos:  
 `csci mutate <mutation>` eg `csci mutate datalab`  
 
