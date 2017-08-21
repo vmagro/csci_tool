@@ -3,7 +3,7 @@ import logging
 from os import path
 
 from .base import BaseCommand
-from .config import Config
+from ..config import Config
 from ..repo import Repo
 
 
@@ -42,12 +42,11 @@ class CollectCommand(BaseCommand):
                         sub.hexsha, dest_dir)
 
             # comment on the commit that we collected
-            repo = github.get_repo(config.github_org, student.repo_name)
+            repo = github.get_repo(config.github_org + '/' + student.repo_name)
             commit = repo.get_commits(sha=sub.hexsha)[0]
-            comment = '''
-This commit was collected as part of {}.
-If youi think this was a mistake or you want to submit this assignment late,
-please fill out the late form.'''.format(assignment)
+            comment = 'This commit was collected as part of "{}". \n \
+If you think this was a mistake or you want to submit this assignment late, \
+please fill out the late form.'.format(assignment)
             commit.create_comment(comment)
 
         # commit all the submissions at once
