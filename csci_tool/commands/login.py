@@ -18,15 +18,19 @@ class LoginCommand(BaseCommand):
     def populate_args(self):
         self.add_argument('-g', '--github', help='GitHub username')
         self.add_argument('-e', '--email', help='USC email')
+        self.add_argument('-p', '--password', help='GitHub password (or one time code)')  # noqa
+        self.add_argument('-o', '--org', help='GitHub org')
+        self.add_argument('-m', '--meta', help='Meta repo name', default='meta')
 
     def run(self, args):
         github = self.prompt(args, 'github')
         email = self.prompt(args, 'email')
+        github_password = self.prompt(args, 'password')
+        org = self.prompt(args, 'org')
+        meta_name = self.prompt(args, 'meta')
         if not email.endswith('@usc.edu'):
             print('You must use your USC email address')
             sys.exit(1)
-        # TODO(vmagro) make generic for different classes
-        # course_number = self.prompt(args, 'course')
 
         # save the user information to the config file
         # save into ~/.csci/cscirc by default
@@ -40,9 +44,9 @@ class LoginCommand(BaseCommand):
         config = Config(config_path)
         config.github_login = github
         config.email = email
-        # TODO(vmagro) make generic for different classes
-        config.meta_name = 'meta'
-        config.github_org = 'usc_csci356_fall17'
+        config.github_org = org
+        config.meta_name = meta_name
+        config.github = github_password
 
         logger.debug('Writing config to %s', config_path)
         config.save()
