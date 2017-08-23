@@ -80,8 +80,7 @@ class CreateReposCommand(BaseCommand):
             logger.info('Creating repo %s', student.repo_name)
             repo = org.create_repo(student.repo_name,
                                    'Homework for {}'.format(student.email),
-                                   # private=True,
-                                  )
+                                   private=True)
             logger.info('Adding %s to collaborators', student.github)
             repo.add_to_collaborators(student.github)
             logger.info('Adding to graders team')
