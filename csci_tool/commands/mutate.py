@@ -45,7 +45,7 @@ class MutateCommand(BaseCommand):
         # clone all the repos first
         def clone(student):
             try:
-                path = Repo.clone_student_repo(student)
+                path = Repo.clone_student_repo(student).working_tree_dir
             except:
                 l.error('Failed to clone repo, does it exist and is your ' +
                         'internet connection working?')
@@ -77,4 +77,4 @@ class MutateCommand(BaseCommand):
             repo.index.commit('[course staff] ' + mutation_name)
             l.info('Pushing repo: %s', student.unix_name)
             repo.remote().push()
-            l.info('Pushed repo: %s', student.unx_name)
+            l.info('Pushed repo: %s', student.unix_name)
