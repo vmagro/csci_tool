@@ -98,12 +98,12 @@ human grading'
                 list = grader.human_grade(student, source_dir)
                 os.chdir(cwd)
                 for i in list[1]:
-                    shell_output = subprocess.Popen('cat ' + i, shell=True, stdout=subprocess.PIPE, cwd=student_submission)
+                    shell_output = subprocess.Popen('subl ' + i, shell=True, stdout=subprocess.PIPE, cwd=student_submission)
                     output = shell_output.stdout.read()
                     output = output.decode("utf-8")
                     print (output)
                 score = input('score out of {}: '.format(list[0]))
-                writer.writerow([student.repo_name] + score)
+                writer.writerow([student.repo_name] + [score])
 
 
         # done grading, commit our changes
