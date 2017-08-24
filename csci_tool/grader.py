@@ -37,6 +37,7 @@ class Grader():
                 student (Student)
                 source_dir (PathLike): directory where grade.py lives
             Returns:
+                tuple(max_score, list_of_str)
                 list of str: files that should be shown to the grader
 
         auto_grade and human_grade are run with cwd set to the corresponding

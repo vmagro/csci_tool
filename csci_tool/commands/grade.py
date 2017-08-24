@@ -2,6 +2,7 @@ import argparse
 import logging
 import csv
 import subprocess
+import sys
 import os
 from os import path
 
@@ -73,23 +74,22 @@ human grading'
         os.chdir(source_dir)
         print(source_dir)
         if args.auto:
-            writer = csv.writer(open('grades.csv', 'a', newline=''), dialect='excel') 
+           f = open('grades.csv', 'a', newline='')
         else:
-            writer = csv.writer(open('grades.csv', 'a', newline=''), dialect='excel')
+           f = open('grades_human.csv', 'a', newline='')
+        writer = csv.writer(f, dialect='excel')
         # make the changes
         for student in students:
-            student_submission = path.join(source_dir, student.repo_name)
+            student_submission = path.join(source_dir, student.unix_name, assignment)
             if args.auto:
                 logger.info('Auto-grading %s', student.unix_name)
-                repo_path = repo.git.rev_parse("--show-toplevel")
                 cwd = os.getcwd()
                 os.chdir(student_submission)
                 # run auto grader script and write out a line of CSV
                 score, max_score = grader.auto_grade(student, source_dir)
                 os.chdir(cwd)
-                writer.writerow([student.repo_name] + [score])
+                writer.writerow([student.repo_name] + score)
                 #write to grades.csv
-                print(score, max_score)
             else:
                 # show the relevant files to a human
                 # wait for them to give a score, then write out a line of CSV
@@ -97,17 +97,25 @@ human grading'
                 os.chdir(student_submission)
                 list = grader.human_grade(student, source_dir)
                 os.chdir(cwd)
-                for i in list:
-                    shell_output = subprocess.Popen('cat' + list[i], shell=True, stdout=subprocess.PIPE, cwd=repo_path)
+                for i in list[1]:
+                    shell_output = subprocess.Popen('cat ' + i, shell=True, stdout=subprocess.PIPE, cwd=student_submission)
                     output = shell_output.stdout.read()
                     output = output.decode("utf-8")
                     print (output)
-                score = input('score out of {}: '.format(max_score))
-                writer.writerow([student.repo_name] + [score])
+                score = input('score out of {}: '.format(list[0]))
+                writer.writerow([student.repo_name] + score)
 
 
         # done grading, commit our changes
-        meta_repo.index.add([path.join(meta_dir, 'submissions', assignment, 'grades.csv')])
+        f.close()
+        if args.auto:
+            meta_repo.index.add([path.join(meta_dir, 'submissions', assignment, 'grades.csv')])
+            meta_repo.index.commit('Auto-Graded {} for {} students'
+                               .format(assignment, len(students)))
+        else:
+            meta_repo.index.add([path.join(meta_dir, 'submissions', assignment, 'grades_human.csv')])
+            meta_repo.index.commit('Human-Graded {} for {} students'
+                               .format(assignment, len(students)))
         meta_repo.index.commit('Graded {} for {} students'
                                .format(assignment, len(students)))
         logger.info('Pushing changes to meta repo')
