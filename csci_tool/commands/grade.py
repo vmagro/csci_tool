@@ -66,23 +66,6 @@ human grading'
             l.error('Failed to import grader "%s", are you sure it exists?',
                     assignment)
             return
-
-        # clone all the repos first
-        def clone(student):
-            try:
-                path = Repo.clone_student_repo(student)
-            except:
-                l.error('Failed to clone repo, does it exist and is your ' +
-                        'internet connection working?')
-                raise
-            return student, path
-        try:
-            repos = [clone(s) for s in students]
-        except:
-            l.error('Cloning one or more repos failed')
-            return
-
-
         # source_dir is where the mutator files exist in the meta repo
         source_dir = path.join(meta_dir, 'submissions', assignment)
         
@@ -92,14 +75,15 @@ human grading'
         if args.auto:
             writer = csv.writer(open('grades.csv', 'a', newline=''), dialect='excel') 
         else:
-            writer = csv.writer(open('grades.csv', 'a', newline=''), dialect='excel')                                        
+            writer = csv.writer(open('grades.csv', 'a', newline=''), dialect='excel')
         # make the changes
-        for student, repo in repos:
+        for student in students:
+            student_submission = path.join(source_dir, student.repo_name)
             if args.auto:
                 logger.info('Auto-grading %s', student.unix_name)
                 repo_path = repo.git.rev_parse("--show-toplevel")
                 cwd = os.getcwd()
-                os.chdir(repo_path)
+                os.chdir(student_submission)
                 # run auto grader script and write out a line of CSV
                 score, max_score = grader.auto_grade(student, source_dir)
                 os.chdir(cwd)
@@ -109,7 +93,10 @@ human grading'
             else:
                 # show the relevant files to a human
                 # wait for them to give a score, then write out a line of CSV
+                cwd = os.getcwd()
+                os.chdir(student_submission)
                 list = grader.human_grade(student, source_dir)
+                os.chdir(cwd)
                 for i in list:
                     shell_output = subprocess.Popen('cat' + list[i], shell=True, stdout=subprocess.PIPE, cwd=repo_path)
                     output = shell_output.stdout.read()
