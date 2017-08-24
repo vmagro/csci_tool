@@ -18,7 +18,10 @@ Instructions
 ------------
 
 Installation  
-`python setup.py install`
+`python3 setup.py install`
+`csci_tool` requires Python3 and setuptools to install  
+(on ubuntu `sudo apt install python3 && pip3 install setuptools`)
+
 
 Usage  
 First login - necessary before you can do anything useful  
