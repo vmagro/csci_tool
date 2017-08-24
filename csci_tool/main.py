@@ -6,10 +6,10 @@ import os
 
 # setup custom git ssh key if necessary
 # this must happen before importing any commands that use GitPython
-from .config import Config
-config = Config.load_config()
-if config.ssh_key is not None:
-    os.environ['GIT_SSH_COMMAND'] = 'ssh -i ' + config.ssh_key
+#from .config import Config
+#config = Config.load_config()
+#if config.ssh_key is not None:
+#    os.environ['GIT_SSH_COMMAND'] = 'ssh -i ' + config.ssh_key
 
 from .commands import subcommands  # noqa
 
