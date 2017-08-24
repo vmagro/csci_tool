@@ -18,7 +18,12 @@ Instructions
 ------------
 
 Installation  
-`python setup.py install`
+`python3 setup.py install`
+
+Notes
+Requires Python 3 and setuptools:
+`sudo apt-get install python3`
+`sudo apt-get install python3-setuptools`
 
 Usage  
 First login - necessary before you can do anything useful  
