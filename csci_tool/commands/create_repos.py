@@ -75,6 +75,8 @@ class CreateReposCommand(BaseCommand):
                          \'graders\' exists in the GitHub org and try again')
             return
 
+        failures = []
+
         for student in students:
             # call github api to create student repo
             logger.info('Creating repo %s', student.repo_name)
@@ -82,7 +84,16 @@ class CreateReposCommand(BaseCommand):
                                    'Homework for {}'.format(student.email),
                                    private=True)
             logger.info('Adding %s to collaborators', student.github)
-            repo.add_to_collaborators(student.github)
+            try:
+                repo.add_to_collaborators(student.github)
+            except:
+                logger.warn('Failed to add %s to %s', student.github, student.repo_name)
+                failures.append((student, 'Student GitHub account ({}) doesn\'t seem to exist'.format(student.github)))
+                # rollback the repo creation
+                logger.info('Deleting %s', student.repo_name)
+                repo.delete()
+                continue
+
             logger.info('Adding to graders team')
             grader_team.add_to_repos(repo)
 
@@ -100,6 +111,11 @@ class CreateReposCommand(BaseCommand):
         meta_repo.index.commit('Added {} students'.format(len(students)))
         logger.debug('Pushing to remote')
         meta_repo.remote().push()
+
+        if failures:
+            logger.error('Failed to create repo for %d students', len(failures))
+            for student, message in failures:
+                logger.error('%s: %s', student.email, message)
 
         os.chdir(cwd)
 
