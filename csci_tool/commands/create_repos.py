@@ -60,7 +60,7 @@ class CreateReposCommand(BaseCommand):
             print('No student data found, not creating repos')
             return
 
-        if sys.stdout.isatty():
+        if sys.stdout.isatty() and args.students != sys.stdin:
             print('You are about to create repos for {} students, are you sure?'.format(len(students)))
             ans = input('[yN]: ') or 'n'
             if ans[0].lower() != 'y':
