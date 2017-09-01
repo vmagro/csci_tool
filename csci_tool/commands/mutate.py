@@ -1,6 +1,5 @@
 import argparse
-import errno
-from git import Repo as GitRepo
+from git import Repo as GitRepo, Actor
 import logging
 import os
 from os import path
@@ -8,7 +7,6 @@ from os import path
 from .base import BaseCommand
 from ..mutator import Mutator
 from ..repo import Repo
-from ..student import Student
 
 l = logging.getLogger(__name__)
 
@@ -74,7 +72,9 @@ class MutateCommand(BaseCommand):
             l.info('Committing repo: %s', student.unix_name)
             repo = GitRepo(repo_path)
             repo.index.add('*')
-            repo.index.commit('[course staff] ' + mutation_name)
+            author = Actor('vmagrobot', 'v+gitbot@vinnie.io')
+            repo.index.commit('[course staff] ' + mutation_name,
+                              author=author, committer=author)
             l.info('Pushing repo: %s', student.unix_name)
             repo.remote().push()
             l.info('Pushed repo: %s', student.unix_name)
