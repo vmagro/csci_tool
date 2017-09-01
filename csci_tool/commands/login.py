@@ -18,7 +18,7 @@ class LoginCommand(BaseCommand):
     def populate_args(self):
         self.add_argument('-g', '--github', help='GitHub username')
         self.add_argument('-e', '--email', help='USC email')
-        self.add_argument('-p', '--password', help='GitHub password (or one time code)')  # noqa
+        self.add_argument('-p', '--password', help='GitHub password (or personal access token)')  # noqa
         self.add_argument('-o', '--org', help='GitHub org')
         self.add_argument('-m', '--meta', help='Meta repo name', default='meta')
 
