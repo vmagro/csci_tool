@@ -4,12 +4,18 @@ import argparse
 import logging
 import os
 
+logger = logging.getLogger(__name__)
+logging.basicConfig(format='%(levelname)s:%(name)s: %(message)s')
 # setup custom git ssh key if necessary
 # this must happen before importing any commands that use GitPython
-from .config import Config
-config = Config.load_config()
-if config.ssh_key is not None:
-    os.environ['GIT_SSH_COMMAND'] = 'ssh -i ' + config.ssh_key
+from .config import Config  # noqa
+try:
+    config = Config.load_config()
+    if config.ssh_key is not None:
+        os.environ['GIT_SSH_COMMAND'] = 'ssh -i ' + config.ssh_key
+except:
+    logger.warn('Couldn\'t find config, this probably just means the user \
+hasn\'t logged in yet')
 
 from .commands import subcommands  # noqa
 
@@ -30,7 +36,7 @@ def main():
 
     # warn is 30, should default to 30 when verbose=0
     # each level below warning is 10 less than the previous
-    log_level = args.verbose*(-10) + 30
+    log_level = args.verbose*(-10) + 20
     logging.basicConfig(format='%(levelname)s:%(name)s: %(message)s',
                         level=log_level)
 
