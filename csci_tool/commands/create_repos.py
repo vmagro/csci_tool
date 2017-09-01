@@ -60,6 +60,13 @@ class CreateReposCommand(BaseCommand):
             print('No student data found, not creating repos')
             return
 
+        if sys.stdout.isatty():
+            print('You are about to create repos for {} students, are you sure?'.format(len(students)))
+            ans = input('[yN]: ') or 'n'
+            if ans[0].lower() != 'y':
+                print('User aborted')
+                return
+
         logger.info('Creating repos for %d students', len(students))
 
         github = config.github
