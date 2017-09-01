@@ -71,6 +71,7 @@ sporkert@usc.edu esporkert
 picus@usc.edu spicus
 '''
 
+
 def test_commit(mocker):
-    # TODO(vmagro) test that a commit with the changes was made
+    # TODO(vmagro) test that a commit with the changes was made to meta repo
     pass
