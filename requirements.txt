@@ -1,0 +1,13 @@
+amqp==2.2.1
+billiard==3.5.0.3
+celery==4.1.0
+-e git+git@github.com:vmagro/csci_tool.git@cfee560bf6d668fd75df5e37f7a05e606f0ce349#egg=csci&subdirectory=cli
+gitdb2==2.0.2
+GitPython==2.1.5
+kombu==4.1.0
+PyGithub==1.35
+PyJWT==1.5.3
+pytz==2017.2
+redis==2.10.6
+smmap2==2.0.3
+vine==1.1.4
