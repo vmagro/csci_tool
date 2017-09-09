@@ -69,8 +69,8 @@ class GradeCommand(BaseCommand):
         writer = csv.writer(f)
         # run the grader
         for student in students:
-            student_submission = path.join(meta_dir, 'submissions',
-                                           assignment, student.unix_name)
+            student_submission = path.join(meta_dir, 'submissions', assignment,
+                                           student.unix_name, assignment)
             if args.auto:
                 logger.info('Auto-grading %s', student.unix_name)
                 cwd = os.getcwd()
