@@ -16,6 +16,7 @@ except:
     pass
 
 from .commands import subcommands  # noqa
+from .repo import Repo  # noqa
 
 parser = argparse.ArgumentParser(
     description='Tool for managing USC CSCI course(s) GitHub repos'
@@ -37,6 +38,10 @@ def main():
     log_level = args.verbose*(-10) + 20
     logging.basicConfig(format='%(levelname)s:%(name)s: %(message)s',
                         level=log_level)
+
+    # before doing anything, check if we can update the meta repo
+    meta_repo = Repo.meta_repo()
+    meta_repo.remote().pull()
 
     args.command.run(args)
 
