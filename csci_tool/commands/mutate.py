@@ -58,9 +58,10 @@ class MutateCommand(BaseCommand):
         # source_dir is where the mutator files exist in the meta repo
         source_dir = path.join(meta_dir, mutation_name)
         # make the changes
-        for student, repo_path in repos:
+        for student, repo in repos:
             l.info('Mutating repo: %s', student.unix_name)
             cwd = os.getcwd()
+            repo_path = repo.git.rev_parse("--show-toplevel")
             os.chdir(repo_path)
             os.makedirs(mutation_name, exist_ok=True)
             os.chdir(mutation_name)
@@ -70,7 +71,7 @@ class MutateCommand(BaseCommand):
         # commit and push our changes
         for student, repo_path in repos:
             l.info('Committing repo: %s', student.unix_name)
-            repo = GitRepo(repo_path)
+            repo = repo_path
             repo.index.add('*')
             author = Actor('vmagrobot', 'v+gitbot@vinnie.io')
             repo.index.commit('[course staff] ' + mutation_name,
