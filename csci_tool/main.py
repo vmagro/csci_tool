@@ -11,12 +11,16 @@ try:
     config = Config.load_config()
     if config.ssh_key is not None:
         os.environ['GIT_SSH_COMMAND'] = 'ssh -i ' + config.ssh_key
+
+    from .repo import Repo  # noqa
+    # before doing anything, check if we can update the meta repo
+    meta_repo = Repo.meta_repo()
+    meta_repo.remote().pull()
 except:
     # fail silently
     pass
 
 from .commands import subcommands  # noqa
-from .repo import Repo  # noqa
 
 parser = argparse.ArgumentParser(
     description='Tool for managing USC CSCI course(s) GitHub repos'
@@ -38,10 +42,6 @@ def main():
     log_level = args.verbose*(-10) + 20
     logging.basicConfig(format='%(levelname)s:%(name)s: %(message)s',
                         level=log_level)
-
-    # before doing anything, check if we can update the meta repo
-    meta_repo = Repo.meta_repo()
-    meta_repo.remote().pull()
 
     args.command.run(args)
 
