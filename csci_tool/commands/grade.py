@@ -79,7 +79,7 @@ class GradeCommand(BaseCommand):
                 scores =  grader.auto_grade(student, source_dir)
                 os.chdir(cwd)
                 # write to grades.csv
-                writer.writerow([student.repo_name] + scores)
+                writer.writerow([student.email] + scores)
             else:
                 # show the relevant files to a human
                 # wait for them to give a score, then write out a line of CSV
