@@ -29,25 +29,39 @@ class CollectCommand(BaseCommand):
         config = Config.load_config()
         github = config.github
 
+        failures = []
         for student in students:
-            dest_dir = path.join('submissions', assignment, student.unix_name)
-            # just add a submodule rather than downloading the whole repo
-            sub = meta_repo.create_submodule(
-                name='{}_{}'.format(assignment, student.unix_name),
-                path=dest_dir,
-                url=student.repo_url
-            )
+            try:
+                dest_dir = path.join('submissions', assignment, student.unix_name)
+                # just add a submodule rather than downloading the whole repo
+                sub = meta_repo.create_submodule(
+                    name='{}_{}'.format(assignment, student.unix_name),
+                    path=dest_dir,
+                    url=student.repo_url
+                )
 
-            logger.info('Collected %s at %s into %s', student.unix_name,
-                        sub.hexsha, dest_dir)
+                logger.info('Collected %s at %s into %s', student.unix_name,
+                            sub.hexsha, dest_dir)
 
-            # comment on the commit that we collected
-            repo = github.get_repo(config.github_org + '/' + student.repo_name)
-            commit = repo.get_commits(sha=sub.hexsha)[0]
-            comment = 'This commit was collected as part of "{}". \n \
+                # comment on the commit that we collected
+                repo_fqn = config.github_org + '/' + student.repo_name
+                # must use fully qualified repo name with org
+                repo = github.get_repo(repo_fqn)
+                commit = repo.get_commits(sha=sub.hexsha)[0]
+                comment = 'This commit was collected as part of "{}". \n \
 If you think this was a mistake or you want to submit this assignment late, \
 please fill out the late form.'.format(assignment)
-            commit.create_comment(comment)
+                commit.create_comment(comment)
+            except:
+                logger.error('Failed to collect %s', student.unix_name)
+                failures.append(student)
+
+        if failures:
+            logger.error('Failed on %d students, please try them again', len(failures))
+            logger.error('Failures have been written out to ./failures.txt')
+            with open('failures.txt', 'w') as f:
+                for s in failures:
+                    f.write(s.email + ' ' + s.github)
 
         # commit all the submissions at once
 
