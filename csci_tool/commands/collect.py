@@ -61,7 +61,7 @@ please fill out the late form.'.format(assignment)
             logger.error('Failures have been written out to ./failures.txt')
             with open('failures.txt', 'w') as f:
                 for s in failures:
-                    f.write(s.email + ' ' + s.github)
+                    f.write(s.email + ' ' + s.github + '\n')
 
         # commit all the submissions at once
 
