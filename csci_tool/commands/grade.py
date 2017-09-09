@@ -105,5 +105,5 @@ class GradeCommand(BaseCommand):
             meta_repo.index.add([path.join(meta_dir, 'submissions', assignment, 'grades_human.csv')])
             meta_repo.index.commit('Human-Graded {} for {} students'
                                    .format(assignment, len(students)))
-        # logger.info('Pushing changes to meta repo')
-        # meta_repo.remote().push()
+        logger.info('Pushing changes to meta repo')
+        meta_repo.remote().push()
