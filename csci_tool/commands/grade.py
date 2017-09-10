@@ -2,6 +2,7 @@ import argparse
 import logging
 import csv
 import subprocess
+import sys
 import os
 from os import path
 
@@ -76,7 +77,7 @@ class GradeCommand(BaseCommand):
                 cwd = os.getcwd()
                 os.chdir(student_submission)
                 # run auto grader script and write out a line of CSV
-                scores =  grader.auto_grade(student, source_dir)
+                scores = grader.auto_grade(student, source_dir)
                 os.chdir(cwd)
                 # write to grades.csv
                 writer.writerow([student.unix_name] + scores)
@@ -85,15 +86,13 @@ class GradeCommand(BaseCommand):
                 # wait for them to give a score, then write out a line of CSV
                 cwd = os.getcwd()
                 os.chdir(student_submission)
-                list = grader.human_grade(student, source_dir)
+                max_score, files = grader.human_grade(student, source_dir)
                 os.chdir(cwd)
-                for i in list[1]:
-                    shell_output = subprocess.Popen('subl ' + i, shell=True, stdout=subprocess.PIPE, cwd=student_submission)
-                    output = shell_output.stdout.read()
-                    output = output.decode("utf-8")
-                    print (output)
-                    score = input('score out of {}: '.format(list[0]))
-                    writer.writerow([student.repo_name] + [score])
+                cmd = 'tail -n +1 {} | less'.format(' '.join(files))
+                subprocess.run(cmd, shell=True,
+                               stdout=sys.stdout, stdin=sys.stdin)
+                score = input('score out of {}: '.format(max_score))
+                writer.writerow([student.repo_name] + [score])
 
         # done grading, commit our changes
         f.close()
