@@ -43,12 +43,12 @@ class MutateCommand(BaseCommand):
         # clone all the repos first
         def clone(student):
             try:
-                path = Repo.clone_student_repo(student).working_tree_dir
+                repo = Repo.clone_student_repo(student)
             except:
                 l.error('Failed to clone repo, does it exist and is your ' +
                         'internet connection working?')
                 raise
-            return student, path
+            return student, repo
         try:
             repos = [clone(s) for s in students]
         except:
@@ -60,6 +60,7 @@ class MutateCommand(BaseCommand):
         # make the changes
         for student, repo in repos:
             l.info('Mutating repo: %s', student.unix_name)
+            print(repo)
             cwd = os.getcwd()
             repo_path = repo.git.rev_parse("--show-toplevel")
             os.chdir(repo_path)
