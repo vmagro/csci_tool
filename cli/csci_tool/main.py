@@ -2,25 +2,9 @@
 
 import argparse
 import logging
-import os
 
-# setup custom git ssh key if necessary
-# this must happen before importing any commands that use GitPython
-from .config import Config  # noqa
-try:
-    config = Config.load_config()
-    if config.ssh_key is not None:
-        os.environ['GIT_SSH_COMMAND'] = 'ssh -i ' + config.ssh_key
-
-    from .repo import Repo  # noqa
-    # before doing anything, check if we can update the meta repo
-    meta_repo = Repo.meta_repo()
-    meta_repo.remote().pull()
-except:
-    # fail silently
-    pass
-
-from .commands import subcommands  # noqa
+from .api import Api
+from .commands import subcommands
 
 parser = argparse.ArgumentParser(
     description='Tool for managing USC CSCI course(s) GitHub repos'
@@ -30,7 +14,7 @@ parser.add_argument('--verbose', '-v', action='count', default=0)
 
 
 def main():
-    subparsers = parser.add_subparsers(dest='command', help='subcommand to run')
+    subparsers = parser.add_subparsers(dest='main_cmd', help='subcommand to run')
     subparsers.required = True
     for cmd in subcommands:
         cmd.populate_parser(subparsers)
@@ -43,7 +27,11 @@ def main():
     logging.basicConfig(format='%(levelname)s:%(name)s: %(message)s',
                         level=log_level)
 
-    args.command.run(args)
+    logger = logging.getLogger(__name__)
+    logger.info('Instantiating api client')
+    api = Api(url='http://localhost:8080/gitbot/schema')
+
+    args.main_cmd.run(api, args)
 
 
 if __name__ == '__main__':
