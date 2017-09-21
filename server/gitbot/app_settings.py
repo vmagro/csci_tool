@@ -2,6 +2,7 @@
 
 from django.conf import settings
 
+CLASS_NAME = getattr(settings, 'GITBOT_CLASS_NAME', 'CS356')
 GITHUB_ORG = getattr(settings, 'GITBOT_GITHUB_ORG', 'usc-csci356-fall2017')
 BOT_USERNAME = getattr(settings, 'GITBOT_BOT_USERNAME', 'vmagrobot')
 BOT_ACCESSTOKEN = getattr(settings, 'GITBOT_BOT_ACCESS_TOKEN', None)
