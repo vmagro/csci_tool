@@ -29,7 +29,7 @@ class Repo(models.Model):
     """A Student GitHub repo."""
 
     student = models.OneToOneField(Student, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, primary_key=True)
 
     def repo_url(self):
         """Cloneable URL to a REPO."""
