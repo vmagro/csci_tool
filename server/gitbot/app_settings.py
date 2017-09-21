@@ -9,3 +9,8 @@ BOT_ACCESSTOKEN = getattr(settings, 'GITBOT_BOT_ACCESS_TOKEN', None)
 
 META_REPO_NAME = getattr(settings, 'GITBOT_META_REPO', 'meta')
 GRADERS_TEAM = getattr(settings, 'GITBOT_GRADERS_TEAM', 'graders')
+
+
+STUDENT_REPO_NAME_FORMAT = getattr(settings, 'GITBOT_STUDENT_REPO_NAME', 'hw_{unix_name}')
+STUDENT_DESCRIPTION_FORMAT = getattr(settings, 'GITBOT_STUDENT_DESCRIPTION',
+                                     'Homework for {preferred_name} {last_name} <{usc_email}>')
