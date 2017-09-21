@@ -9,7 +9,7 @@ BOT_USERNAME = getattr(settings, 'GITBOT_BOT_USERNAME', 'vmagrobot')
 BOT_ACCESSTOKEN = getattr(settings, 'GITBOT_BOT_ACCESS_TOKEN', None)
 BOT_PRIVATE_KEY_PATH = getattr(settings, 'GITBOT_BOT_PRIVATE_KEY_PATH', None)
 
-META_REPO_NAME = getattr(settings, 'GITBOT_META_REPO', 'meta')
+ASSIGNMENTS_REPO_NAME = getattr(settings, 'GITBOT_ASSIGNMENTS_REPO', 'assignments')
 GRADERS_TEAM = getattr(settings, 'GITBOT_GRADERS_TEAM', 'graders')
 
 
