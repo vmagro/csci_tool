@@ -8,11 +8,11 @@ from .app_settings import GITHUB_ORG
 class Student(models.Model):
     """A Student with a repo that we will give/collect assignments to/from."""
 
+    usc_email = models.EmailField(primary_key=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     preferred_name = models.CharField(max_length=100)
-    usc_email = models.EmailField()
-    usc_id = models.IntegerField()
+    usc_id = models.CharField(max_length=20)
     github_username = models.CharField(max_length=100)
 
     @property
