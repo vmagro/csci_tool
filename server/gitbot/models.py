@@ -64,3 +64,11 @@ class Assignment(models.Model):
     assigned_date = models.DateTimeField(null=True)
     # when the assignment will be collected
     due_date = models.DateTimeField(null=True)
+
+
+class Submission(models.Model):
+    """Commit for a Student that was on 'master' at the time of an Assignment due date."""
+
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
+    commit = models.ForeignKey(Commit, on_delete=models.CASCADE)
