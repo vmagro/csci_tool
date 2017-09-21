@@ -1,6 +1,6 @@
 """Celery tasks for gitbot."""
-from typing import Type
-from celery import shared_task, chain
+from typing import Type, List
+from celery import shared_task, chain, group
 from celery.utils.log import get_task_logger
 
 from .models import Student, Assignment
@@ -50,8 +50,17 @@ def push_repo(repo: Type[LocalRepo]):
     return repo
 
 
-def update_repo(student: Type[Student], assignment: Type[Assignment]):
+@shared_task
+def give_assignment(student: Type[Student], assignment: Type[Assignment]):
     """Update a repo given an assignment. clone -> mutate -> commit -> push."""
     update_chain = chain(clone_repo.s(student), mutate_repo.s(assignment),
                          commit_repo.s(), push_repo.s())
     return update_chain.apply_async()
+
+
+@shared_task
+def give_assignment_to_all(students: List[Student], assignment: Type[Assignment]):
+    """Update all student's repos using the mutation from an assignment."""
+    give_tasks = [give_assignment.s(student, assignment) for student in students]
+    g = group(give_tasks)
+    return g.apply_async()
