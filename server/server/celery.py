@@ -6,8 +6,6 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'server.settings')
 
 app = Celery('server', broker='redis://localhost')
 
-app.loader.override_backends['django-db'] = 'django_celery_results.backends.database:DatabaseBackend'
-
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.
 # - namespace='CELERY' means all celery-related configuration keys
