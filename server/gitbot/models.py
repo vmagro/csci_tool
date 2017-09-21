@@ -43,13 +43,12 @@ class Repo(models.Model):
 class Commit(models.Model):
     """Commit that is either a user commit or a bot commit."""
 
+    sha = models.CharField(max_length=200, primary_key=True)
     author = models.CharField(max_length=100)
-    sha = models.CharField(max_length=200)
     commit_date = models.DateTimeField()
     push_date = models.DateTimeField()
     message = models.CharField(max_length=200)
     repo = models.ForeignKey(Repo, on_delete=models.CASCADE)
-    from_bot = models.BooleanField(default=False)
 
 
 class Assignment(models.Model):
