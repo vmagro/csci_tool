@@ -1,3 +1,19 @@
 [[source]]
 url = "https://pypi.python.org/simple"
 verify_ssl = true
+[packages]
+
+amqp = "==2.2.2"
+billiard = "==3.5.0.3"
+celery = "==4.1.0"
+chardet = "==3.0.4"
+Django = "==1.11.5"
+django_celery_results = "==1.0.1"
+django-csvimport = "==2.11"
+django-rest-framework = "==0.1.0"
+djangorestframework = "==3.6.4"
+kombu = "==4.1.0"
+pytz = "==2017.2"
+vine = "==1.1.4"
+
+
