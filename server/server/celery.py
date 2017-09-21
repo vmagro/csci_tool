@@ -1,3 +1,4 @@
+"""celery config for gitbot."""
 import os
 from celery import Celery
 
