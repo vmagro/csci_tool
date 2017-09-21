@@ -10,6 +10,8 @@ BOT_ACCESSTOKEN = getattr(settings, 'GITBOT_BOT_ACCESS_TOKEN', None)
 BOT_PRIVATE_KEY_PATH = getattr(settings, 'GITBOT_BOT_PRIVATE_KEY_PATH', None)
 
 ASSIGNMENTS_REPO_NAME = getattr(settings, 'GITBOT_ASSIGNMENTS_REPO', 'assignments')
+ASSIGNMENTS_REPO_URL = 'git@github.com/{}:{}.git'.format(GITHUB_ORG, ASSIGNMENTS_REPO_NAME)
+ASSIGNMENTS_REPO_PATH = getattr(settings, 'GITBOT_ASSIGNMENTS_REPO_PATH', '/tmp/assignments_repo')
 GRADERS_TEAM = getattr(settings, 'GITBOT_GRADERS_TEAM', 'graders')
 
 
