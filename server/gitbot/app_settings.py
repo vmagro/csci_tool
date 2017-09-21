@@ -7,6 +7,7 @@ GITHUB_ORG = getattr(settings, 'GITBOT_GITHUB_ORG', 'usc-csci356-fall2017')
 BOT_EMAIL = getattr(settings, 'GITBOT_BOT_EMAIL', 'v+gitbot@vinnie.io')
 BOT_USERNAME = getattr(settings, 'GITBOT_BOT_USERNAME', 'vmagrobot')
 BOT_ACCESSTOKEN = getattr(settings, 'GITBOT_BOT_ACCESS_TOKEN', None)
+BOT_PRIVATE_KEY_PATH = getattr(settings, 'GITBOT_BOT_PRIVATE_KEY_PATH', None)
 
 META_REPO_NAME = getattr(settings, 'GITBOT_META_REPO', 'meta')
 GRADERS_TEAM = getattr(settings, 'GITBOT_GRADERS_TEAM', 'graders')
