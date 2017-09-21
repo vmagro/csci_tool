@@ -56,6 +56,11 @@ def look_for_assignments(repo: Type[LocalRepo]):
             assignment.save()
 
     # check if there are any assignments that we need to delete
+    for assignment in Assignment.objects.all():
+        if assignment.path not in found:
+            logger.info('Assignment %s no longer exists, deleting it', assignment.path)
+            assignment.delete()
+
     return found
 
 
