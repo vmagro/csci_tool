@@ -35,6 +35,10 @@ class Repo(models.Model):
         """Cloneable URL to a REPO."""
         return 'git@github.com:{}/{}.git'.format(GITHUB_ORG, self.repo_name)
 
+    def head_commit(self):
+        """Get whatever the latest commit is to this repo at the current point in time."""
+        return self.commit_set.order_by('-commit_date').first()
+
     def __str__(self):
         """Return human-readable representation."""
         return 'Repo: {} for {}'.format(self.name, self.student)
