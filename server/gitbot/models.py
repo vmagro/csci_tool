@@ -62,6 +62,10 @@ class Assignment(models.Model):
     # when the assignment will be collected
     due_date = models.DateTimeField(null=True)
 
+    def __str__(self):
+        """Return human-readable representation."""
+        return 'Assignment: {}, due {}'.format(self.path, self.due_date)
+
 
 class Submission(models.Model):
     """Commit for a Student that was on 'master' at the time of an Assignment due date."""
