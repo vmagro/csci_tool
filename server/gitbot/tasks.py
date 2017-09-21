@@ -3,6 +3,7 @@ from typing import Type, List
 from celery import shared_task, chain, group
 from celery.utils.log import get_task_logger
 
+from .app_settings import BOT_USERNAME as author_name, BOT_EMAIL as author_email
 from .models import Student, Assignment, Submission
 from .repo import LocalRepo
 
@@ -40,6 +41,7 @@ def commit_repo(repo_and_commit: (Type[LocalRepo], str)) -> Type[LocalRepo]:
     """Add all local files and commit any changes to the repo."""
     repo, commit_message = repo_and_commit
     logger.info('Committing repo at %s', repo.path)
+    repo.commit(author_name, author_email, commit_message)
     return repo
 
 
@@ -47,6 +49,8 @@ def commit_repo(repo_and_commit: (Type[LocalRepo], str)) -> Type[LocalRepo]:
 def push_repo(repo: Type[LocalRepo]):
     """Push new repo commit to GitHub."""
     logger.info('Pushing repo at %s to GitHub', repo.path)
+    repo.push()
+    logger.info('Pushed repo to GitHub')
     return repo
 
 
