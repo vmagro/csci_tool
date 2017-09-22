@@ -18,5 +18,5 @@ class StudentSerializer(serializers.HyperlinkedModelSerializer):
         """Check if the GitHub account actually exists."""
         exists = github.user_exists(username)
         if not exists:
-            raise ValidationError('Github account doesn\'t exist')
+            raise ValidationError(f'Github account "{username}" doesn\'t exist')
         return username
