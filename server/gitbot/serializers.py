@@ -7,7 +7,7 @@ from .models import Student
 from . import github
 
 
-class StudentSerializer(serializers.ModelSerializer):
+class StudentSerializer(serializers.HyperlinkedModelSerializer):
     """Serializer class for Student model."""
 
     class Meta:
