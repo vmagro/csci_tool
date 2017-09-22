@@ -5,4 +5,8 @@ verify_ssl = true
 python_version = "3.6"
 [packages]
 coreapi = "*"
+termcolor = "*"
+
+
+
 

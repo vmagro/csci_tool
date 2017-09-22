@@ -25,9 +25,9 @@ class BaseCommand(object):
         """Populate an subparser with the options for this subcommand"""
         self.parser = subparsers.add_parser(self.NAME, help=self.HELP)
         self.parser.set_defaults(main_cmd=self)
-        self.populate_args()
+        self.populate_args(self.parser)
 
-    def populate_args(self):
+    def populate_args(self, parser):
         """Populate the subparser with arguments by calling self.add_argument"""
         pass
 
