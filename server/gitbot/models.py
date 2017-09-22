@@ -15,6 +15,11 @@ class Student(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
 
+    # is this student in the canary list (which probably means they're really a CP)
+    # this is used to more safely test new versions of mutations or grading scripts as we can run on
+    # only repos that are marked as canaries
+    canary = models.BooleanField(default=False)
+
     @property
     def unix_name(self):
         """USC username extraced from email."""
