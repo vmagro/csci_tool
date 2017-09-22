@@ -10,7 +10,7 @@ class Student(models.Model):
 
     usc_email = models.EmailField(unique=True)
     usc_id = models.CharField(max_length=20, unique=True)
-    github_username = models.CharField(max_length=100)
+    github_username = models.CharField(max_length=100, unique=True)
     preferred_name = models.CharField(max_length=100)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
