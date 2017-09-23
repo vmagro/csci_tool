@@ -1,5 +1,5 @@
-from .students import StudentCommand
+from .students import student
 
 subcommands = [
-    StudentCommand(),
+    student,
 ]

@@ -1,38 +1,29 @@
 #!/usr/bin/env python3
 
-import argparse
 import logging
+import click
 
 from .api import Api
 from .commands import subcommands
 
-parser = argparse.ArgumentParser(
-    description='Tool for managing USC CSCI course(s) GitHub repos'
-)
 
-parser.add_argument('--verbose', '-v', action='count', default=0)
-
-
-def main():
-    subparsers = parser.add_subparsers(dest='main_cmd', help='subcommand to run')
-    subparsers.required = True
-    for cmd in subcommands:
-        cmd.populate_parser(subparsers)
-
-    args = parser.parse_args()
-
+@click.group()
+@click.option('-v', '--verbose', count=True)
+@click.option('--api', default='http://localhost:8080/gitbot/schema')
+@click.pass_context
+def cli(ctx, verbose, api):
+    """Set up api client and logging level."""
     # warn is 30, should default to 30 when verbose=0
     # each level below warning is 10 less than the previous
-    log_level = args.verbose*(-10) + 20
+    log_level = verbose*(-10) + 20
     logging.basicConfig(format='%(levelname)s:%(name)s: %(message)s',
                         level=log_level)
 
     logger = logging.getLogger(__name__)
-    logger.info('Instantiating api client')
-    api = Api(url='http://localhost:8080/gitbot/schema')
 
-    args.main_cmd.run(api, args)
+    logger.debug('Instantiating api client')
+    ctx.obj = Api(url=api)
 
 
-if __name__ == '__main__':
-    main()
+for sub in subcommands:
+    cli.add_command(sub)

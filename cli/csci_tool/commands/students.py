@@ -1,58 +1,61 @@
 """Commands for interacting with student data."""
 
-from termcolor import colored
+import click
 
-from .base import BaseCommand
-
+from .base import pass_api
 from ..models import Student
 
 
-class StudentCommand(BaseCommand):
+@click.group()
+def student():
+    """Command group for students."""
+    pass
 
-    NAME = 'students'
-    HELP = 'interact with student data'
 
-    def populate_args(self, parser):
-        subparsers = parser.add_subparsers()
-        subparsers.required = True
+@student.command()
+@pass_api
+def list(api):
+    """List all students in the database."""
+    students = api.students.list()
+    for s in students:
+        s = Student(s)
+        print(s)
 
-        list_students = subparsers.add_parser('list', help='list all students')
-        list_students.set_defaults(subcommand=self.list)
 
-        create_student = subparsers.add_parser('create', help='create a student')
-        create_student.set_defaults(subcommand=self.create)
-        create_student.add_argument('usc_email', help='USC email')
-        create_student.add_argument('usc_id', help='USC ID')
-        create_student.add_argument('github_username', help='GitHub username')
-        create_student.add_argument('preferred_name', help='Preferred Name')
-        create_student.add_argument('first_name', help='First Name')
-        create_student.add_argument('last_name', help='Last Name')
-
-    def run(self, api, args):
-        args.subcommand(api, args)
-
-    def list(self, api, args):
-        students = api.students.list()
-        for s in students:
-            s = Student(s)
-            print(s)
-
-    def create(self, api, args):
-        student_data = {
-            'usc_email': args.usc_email,
-            'usc_id': args.usc_id,
-            'github_username': args.github_username,
-            'preferred_name': args.preferred_name,
-            'first_name': args.first_name,
-            'last_name': args.last_name,
-        }
-        try:
-            student = api.students.create(**student_data)
-            student = Student(student)
-            print(student)
-        except Exception as e:
+@student.command()
+@click.argument('usc_email')
+@click.argument('usc_id')
+@click.argument('github_username')
+@click.argument('preferred_name')
+@click.argument('first_name')
+@click.argument('last_name')
+@pass_api
+def create(api, usc_email, usc_id, github_username, preferred_name, first_name, last_name):
+    """Add a new student to the db."""
+    try:
+        student = api.students.create(
+            usc_email=usc_email,
+            usc_id=usc_id,
+            github_username=github_username,
+            preferred_name=preferred_name,
+            first_name=first_name,
+            last_name=last_name,
+        )
+        student = Student(student)
+        print(student)
+    except Exception as e:
+        if hasattr(e, 'error'):
             if 'github_username' in e.error:
                 messages = e.error['github_username']
-                print(colored('\n'.join(messages), 'red'))
+                click.secho('\n'.join(messages), fg='red')
             else:
-                print(colored('An unknown error occurred.', 'red'))
+                # loop over all the keys, join all the messages
+                messages = []
+                for field in e.error:
+                    # e.error.field is a list of messages explaining all the issues
+                    messages += e.error[field]
+                messages = '\n'.join(messages)
+                click.secho(messages, fg='red')
+        else:
+            click.secho('An unknown error occurred.', fg='red')
+            raise

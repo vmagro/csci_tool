@@ -37,6 +37,6 @@ setup(
         'pytest-runner', 'flake8'
     ],
     entry_points={
-        'console_scripts': ['csci=csci_tool.main:main'],
+        'console_scripts': ['csci=csci_tool.main:cli'],
     },
 )
