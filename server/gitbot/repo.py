@@ -53,7 +53,9 @@ class LocalRepo(object):
         # then make the commit
         self.run(['git', 'commit',
                   '--author="{} <{}>"'.format(author_name, author_email),
-                  '-m', commit_message])
+                  '-m', commit_message,
+                  '--allow-empty',  # a lot of time we want to make an empty commit during testing
+                  ])
         # just for fun return the sha of the commit we just made
         return self.run(['git', 'rev-parse', 'head']).stdout.decode('utf-8')
 
