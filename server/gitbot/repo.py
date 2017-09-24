@@ -43,8 +43,16 @@ class LocalRepo(object):
         if private_key_path:
             env['GIT_SSH_COMMAND'] = 'ssh -i {}'.format(private_key_path)
 
-        return subprocess.run(cmd, check=True, cwd=self.path, env=env,
-                              stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
+        try:
+            return subprocess.run(cmd, check=True, cwd=self.path, env=env,
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
+        except subprocess.CalledProcessError as e:
+            logger.error('Subprocess failed')
+            logger.error('stdout:')
+            logger.error(e.stdout)
+            logger.error('stderr:')
+            logger.error(e.stderr)
+            raise
 
     def commit(self, author_name: str, author_email: str, commit_message: str):
         """Make a commit in the repo using the given author and message."""
