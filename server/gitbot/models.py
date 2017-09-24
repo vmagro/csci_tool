@@ -36,9 +36,10 @@ class Repo(models.Model):
     student = models.OneToOneField(Student, primary_key=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
 
+    @property
     def repo_url(self):
         """Cloneable URL to a REPO."""
-        return 'git@github.com:{}/{}.git'.format(GITHUB_ORG, self.repo_name)
+        return 'git@github.com:{}/{}.git'.format(GITHUB_ORG, self.name)
 
     def head_commit(self):
         """Get whatever the latest commit is to this repo at the current point in time."""
