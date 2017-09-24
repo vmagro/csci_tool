@@ -114,12 +114,16 @@ def cleanup_repo(repo: Type[LocalRepo]):
     repo.delete()
 
 
-@shared_task
 def give_assignment(student: Type[Student], assignment: Type[Assignment]):
     """Update a repo given an assignment. clone -> mutate -> commit -> push."""
-    update_chain = chain(clone_repo.s(student), mutate_repo.s(assignment),
-                         commit_repo.s(), push_repo.s(), cleanup_repo.s())
-    return update_chain.apply_async()
+    task = chain(clone_repo.s(student),
+                 mutate_repo.s(assignment),
+                 commit_repo.s(),
+                 push_repo.s(),
+                 cleanup_repo.s(),
+                 )
+
+    return task.apply_async()
 
 
 @shared_task
