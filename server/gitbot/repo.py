@@ -3,7 +3,7 @@
 from distutils import dir_util
 import logging
 import subprocess
-from tempfile import TemporaryDirectory
+import tempfile
 from typing import Type
 
 from .app_settings import BOT_PRIVATE_KEY_PATH as private_key_path
@@ -25,15 +25,16 @@ class LocalRepo(object):
     @staticmethod
     def clone_from_url(url: str, path: str):
         """Clone a repo to local disk given a git url."""
-        logger.debugh('Repo path: %s', path)
+        logger.debug('Repo path: %s', path)
         instance = LocalRepo(path)
         subprocess.run(['git', 'clone', '--depth', '1', url, instance.path])
+        return instance
 
     @staticmethod
     def clone_repo(repo_stub: Type[DBRepo]):
         """Clone a repo to local disk given information from the database."""
         logger.info('Cloning repo for %s', repo_stub.student.unix_name)
-        path = TemporaryDirectory(prefix='gitbot')
+        path = tempfile.mkdtemp(prefix='gitbot', suffix=repo_stub.student.unix_name)
         return LocalRepo.clone_from_url(repo_stub.repo_url, path)
 
     def run(self, cmd, **kwargs):
