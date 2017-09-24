@@ -64,9 +64,9 @@ class Commit(models.Model):
 class Assignment(models.Model):
     """An Assignment is a directory in the meta repo that can be assigned and graded."""
 
-    path = models.CharField(max_length=100, primary_key=True)
+    path = models.CharField(max_length=100, primary_key=True, editable=False)
     # when the assignment will be collected
-    due_date = models.DateTimeField(null=True)
+    due_date = models.DateTimeField(null=True, editable=False)
 
     @property
     def name(self):
