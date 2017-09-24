@@ -3,7 +3,7 @@
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
 
-from .models import Student
+from .models import Student, Assignment
 from . import github
 
 
@@ -20,3 +20,11 @@ class StudentSerializer(serializers.HyperlinkedModelSerializer):
         if not exists:
             raise ValidationError(f'Github account "{username}" doesn\'t exist')
         return username
+
+
+class AssignmentSerializer(serializers.HyperlinkedModelSerializer):
+    """Serializer class for Serializer model."""
+
+    class Meta:
+        model = Assignment
+        fields = '__all__'

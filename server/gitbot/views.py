@@ -1,8 +1,8 @@
 """API views for gitbot."""
 from rest_framework import viewsets
 
-from .models import Student
-from .serializers import StudentSerializer
+from .models import Student, Assignment
+from .serializers import StudentSerializer, AssignmentSerializer
 
 import time
 from rest_framework.decorators import api_view
@@ -10,10 +10,13 @@ from django.http import StreamingHttpResponse
 
 
 class StudentViewSet(viewsets.ModelViewSet):
-    """StudentViewSet, supports bulk upload of Student objects."""
-
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
+
+
+class AssignmentViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Assignment.objects.all()
+    serializer_class = AssignmentSerializer
 
 
 @api_view(['GET', 'POST'])

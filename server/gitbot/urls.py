@@ -9,6 +9,7 @@ from . import hooks
 
 router = DefaultRouter(trailing_slash=False)
 router.register(r'students', views.StudentViewSet)
+router.register(r'assignments', views.AssignmentViewSet)
 
 schema_view = get_schema_view(title='Gitbot API')
 
