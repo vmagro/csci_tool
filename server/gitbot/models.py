@@ -68,6 +68,11 @@ class Assignment(models.Model):
     # when the assignment will be collected
     due_date = models.DateTimeField(null=True)
 
+    @property
+    def name(self):
+        """Someday we may want a customizable name for an assignment, but just use path for now."""
+        return self.path
+
     def __str__(self):
         """Return human-readable representation."""
         return 'Assignment: {}, due {}'.format(self.path, self.due_date)
