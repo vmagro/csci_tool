@@ -1,12 +1,11 @@
 """API views for gitbot."""
 from rest_framework import viewsets
+from django.http import StreamingHttpResponse
+from rest_framework.decorators import detail_route
 
 from .models import Student, Assignment
 from .serializers import StudentSerializer, AssignmentSerializer
-
-import time
-from rest_framework.decorators import api_view
-from django.http import StreamingHttpResponse
+from . import tasks
 
 
 class StudentViewSet(viewsets.ModelViewSet):
@@ -18,17 +17,23 @@ class AssignmentViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Assignment.objects.all()
     serializer_class = AssignmentSerializer
 
+    @detail_route(methods=['POST'])
+    def deploy(self, request, pk=None):
+        """Deploy assignment to all student repos."""
+        assignment = self.get_object()
 
-@api_view(['GET', 'POST'])
-def stream_test(request):
-    def gen():
-        i = 0
-        while True:
-            print(i)
-            time.sleep(0.5)
-            i += 1
-            yield '{}\r\n\r'.format(i)
-    print('calling gen')
-    content = gen()
-    print('got generator')
-    return StreamingHttpResponse(streaming_content=content)
+        # TODO: support canarying
+        students = Student.objects.all()
+
+        task_group = tasks.give_assignment_to_all(students, assignment)
+
+        def stream_generator():
+            def cb(task_id, value):
+                print('Got task result')
+                yield '{}\n'.format(task_id)
+            print('joining')
+            yield task_group.get(callback=cb)
+            print('joined')
+
+        content = stream_generator()
+        return StreamingHttpResponse(streaming_content=content)

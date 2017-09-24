@@ -17,5 +17,4 @@ urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^hook/push$', hooks.push_hook),
     url(r'^schema/$', schema_view),
-    url(r'^stream-test$', views.stream_test),
 ]
