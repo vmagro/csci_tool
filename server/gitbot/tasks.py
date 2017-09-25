@@ -11,6 +11,7 @@ from .app_settings import (
 )
 from .models import Student, Assignment, Submission, Mutation
 from .repo import LocalRepo
+from .assignment_utils import assignment_status
 
 logger = get_task_logger(__name__)
 
@@ -46,14 +47,15 @@ def look_for_assignments(repo: Type[LocalRepo]):
             logger.info('Updating %s due date', directory)
             due_date = open(path.join(repo.path, directory, 'due_date.txt'), 'r').read()
             assignment.due_date = due_date
-            assignment.save()
         except:
             # doesn't exist, lets create it
             # read the due date from a file in the directory
             due_date = open(path.join(repo.path, directory, 'due_date.txt'), 'r').read()
             logger.info('Creating new assignment %s, due on %s', directory, due_date)
             assignment = Assignment(path=directory, due_date=due_date)
-            assignment.save()
+        # now the assignment exists for sure, make the status string
+        assignment.status = assignment_status(path.join(repo.path, directory))
+        assignment.save()
 
     # check if there are any assignments that we need to delete
     for assignment in Assignment.objects.all():
