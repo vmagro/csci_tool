@@ -93,4 +93,6 @@ class Submission(models.Model):
                               validators=[validate_comma_separated_integer_list])
 
     class Meta:
+        """Provide stronger uniqueness guarantees."""
+
         unique_together = ('student', 'assignment', 'commit')
