@@ -41,8 +41,8 @@ def look_for_assignments(repo: Type[LocalRepo]):
     for directory in found:
         # check if the assignment exists already in the db
         try:
-            logger.info('Assignment "%s" already exists', directory)
             assignment = Assignment.get(pk=directory)
+            logger.info('Assignment "%s" already exists', directory)
             # the due date might still have been changed, let's update it just in case
             logger.info('Updating %s due date', directory)
             due_date = open(path.join(repo.path, directory, 'due_date.txt'), 'r').read()
