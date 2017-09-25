@@ -99,9 +99,9 @@ class Submission(models.Model):
 
 
 class Mutation(models.Model):
-    """Changes the bot made to a repo and why."""
+    """Changes the bot made to a repo and for what assignment."""
 
-    repo = models.ForeignKey(Repo, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
     sha = models.CharField(max_length=200, primary_key=True)
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
