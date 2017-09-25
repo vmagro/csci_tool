@@ -34,7 +34,6 @@ INSTALLED_APPS = [
     'gitbot',
     'csvimport',
     'rest_framework',
-    'django_celery_results',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
