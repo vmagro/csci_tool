@@ -14,7 +14,7 @@ class StudentViewSet(viewsets.ModelViewSet):
 
 
 class AssignmentViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Assignment.objects.all()
+    queryset = Assignment.objects.all().order_by('-due_date')
     serializer_class = AssignmentSerializer
 
     @detail_route(methods=['POST'])
