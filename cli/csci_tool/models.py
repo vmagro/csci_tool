@@ -1,3 +1,5 @@
+import dateutil.parser
+
 class Student(object):
 
     def __init__(self, d: dict):
@@ -20,4 +22,6 @@ class Assignment(object):
         self.status = d['status']
 
     def __str__(self):
-        return f'{self.path} due at {self.due_date}: "{self.status}"'
+        date = dateutil.parser.parse(self.due_date)
+        date = date.strftime('%a %b %y at %I:%M:%S %p')
+        return f'{self.path} due at {date}: "{self.status}"'
