@@ -69,6 +69,9 @@ class Assignment(models.Model):
     # when the assignment will be collected
     due_date = models.DateTimeField(null=True, editable=False)
 
+    # human-readable status message about this assignment
+    status = models.CharField(max_length=200)
+
     @property
     def name(self):
         """Someday we may want a customizable name for an assignment, but just use path for now."""
