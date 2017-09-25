@@ -27,4 +27,4 @@ class AssignmentSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Assignment
-        fields = '__all__'
+        fields = ('url', 'path', 'due_date', 'status')
