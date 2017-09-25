@@ -9,7 +9,7 @@ from .app_settings import (
     BOT_USERNAME as author_name, BOT_EMAIL as author_email,
     ASSIGNMENTS_REPO_URL, ASSIGNMENTS_REPO_PATH
 )
-from .models import Student, Assignment, Submission
+from .models import Student, Assignment, Submission, Mutation
 from .repo import LocalRepo
 
 logger = get_task_logger(__name__)
@@ -91,11 +91,14 @@ def mutate_repo(repo: Type[LocalRepo], assignment: Type[Assignment]) -> (Type[Lo
 
 
 @shared_task
-def commit_repo(repo_and_commit: (Type[LocalRepo], str)) -> Type[LocalRepo]:
+def commit_repo(repo_and_commit: (Type[LocalRepo], str), assignment: Type[Assignment],
+                student: Type[Student]) -> Type[LocalRepo]:
     """Add all local files and commit any changes to the repo."""
     repo, commit_message = repo_and_commit
     logger.info('Committing repo at %s', repo.path)
-    repo.commit(author_name, author_email, commit_message)
+    sha = repo.commit(author_name, author_email, commit_message)
+    mutation = Mutation(student=student, sha=sha, assignment=assignment)
+    mutation.save()
     return repo
 
 
@@ -119,7 +122,7 @@ def give_assignment(student: Type[Student], assignment: Type[Assignment]):
     """Update a repo given an assignment. clone -> mutate -> commit -> push."""
     task = chain(clone_repo.s(student),
                  mutate_repo.s(assignment),
-                 commit_repo.s(),
+                 commit_repo.s(assignment, student),
                  push_repo.s(),
                  cleanup_repo.s(),
                  )
