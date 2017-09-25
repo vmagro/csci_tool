@@ -96,3 +96,12 @@ class Submission(models.Model):
         """Provide stronger uniqueness guarantees."""
 
         unique_together = ('student', 'assignment', 'commit')
+
+
+class Mutation(models.Model):
+    """Changes the bot made to a repo and why."""
+
+    repo = models.ForeignKey(Repo, on_delete=models.CASCADE)
+    sha = models.CharField(max_length=200, primary_key=True)
+    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True)
