@@ -6,7 +6,9 @@ import logging
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from .app_settings import ASSIGNMENTS_REPO_NAME
 from .models import Repo, Commit
+from .tasks import update_assignment_repo, look_for_assignments
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +26,12 @@ def push_hook(request):
     try:
         repo = Repo.objects.get(pk=repo_name)
     except:
-        logger.warning('Failed to find repo "%s", ignoring this hook', repo_name)
+        # if it's the meta repo, look to see if we can find any new assignments
+        if repo_name == ASSIGNMENTS_REPO_NAME:
+            logger.info('Got a push for the meta repo, looking for new assignments')
+            update_assignment_repo.apply_async(link=look_for_assignments.s())
+        else:
+            logger.warning('Failed to find repo "%s", ignoring this hook', repo_name)
         return Response('OK')
 
     # create new commits in the database based on what was pushed
