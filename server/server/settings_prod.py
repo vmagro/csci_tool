@@ -50,7 +50,7 @@ DATABASES = {
 }
 
 # we also need to override some celery options since redis is in a separate containers
-CELERY_BROKER = 'redis://redis'
+CELERY_BROKER_URL = 'redis://redis'
 
 # we want to be able to collect static files so that nginx knows what to do with them
 STATIC_ROOT = 'static'
