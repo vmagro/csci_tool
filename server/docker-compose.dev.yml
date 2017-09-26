@@ -4,6 +4,8 @@ services:
   django:
     environment:
       DJANGO_SETTINGS_MODULE: 'server.settings'
+      DJANGO_SECRET: 'unsafe!'
+      DB_PASSWORD: 'development'
 
   db:
     environment:
@@ -14,6 +16,5 @@ services:
   celery:
     environment:
       DJANGO_SETTINGS_MODULE: 'server.settings_prod'
-    secrets:
-      - db_password
-      - django_secret
+      DJANGO_SECRET: 'unsafe!'
+      DB_PASSWORD: 'development'
