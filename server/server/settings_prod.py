@@ -28,7 +28,7 @@ SECURE_SSL_REDIRECT = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # we're using docker secrets which will store the content in files under /run/secrets
-SECRET_KEY = os.environ['DJANGO_SECRET']
+SECRET_KEY = os.environ.get('DJANGO_SECRET', '')
 
 
 # we need to override some database settings since we use sqlite in development
@@ -38,7 +38,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'csci_tool',
         'USER': 'csci_tool',
-        'PASSWORD': os.environ['DB_PASSWORD'],
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
         'HOST': 'db',
         'PORT': '',
     }
