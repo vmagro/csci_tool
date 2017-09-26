@@ -4,6 +4,8 @@ Production settings for server app.
 Based on the normal settings, we just override the options we want to change in prod.
 """
 
+import os
+
 # import all the options in settings and just override the ones we want
 from .settings import *  # noqa
 
@@ -26,13 +28,7 @@ SECURE_SSL_REDIRECT = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # we're using docker secrets which will store the content in files under /run/secrets
-try:
-    SECRET_KEY = open('/run/secrets/django_secret').read()
-    DB_PASSWORD = open('/run/secrets/db_password').read()
-except:
-    print('\e[0;31mUNABLE TO READ SECRETS. THIS IS ONLY OK IF YOU AREN\'T RUNNING UWSGI\e[0m')
-    SECRET_KEY = 'unsafe!'
-    DB_PASSWORD = None
+SECRET_KEY = os.environ['DJANGO_SECRET']
 
 
 # we need to override some database settings since we use sqlite in development
@@ -42,7 +38,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'csci_tool',
         'USER': 'csci_tool',
-        'PASSWORD': DB_PASSWORD,
+        'PASSWORD': os.environ['DB_PASSWORD'],
         'HOST': 'db',
         'PORT': '',
     }
