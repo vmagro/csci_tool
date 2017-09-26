@@ -36,6 +36,7 @@ def has_due_date(path: str) -> bool:
     try:
         date_str = open(path.join(path, 'due_date.txt'), 'r').read()
         dateutil.parser.parse(date_str)
+        return True
     except:
         return False
 
