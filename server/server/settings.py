@@ -32,7 +32,6 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'gitbot',
-    'csvimport',
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
