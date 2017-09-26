@@ -11,6 +11,13 @@ services:
       - db
       - redis
     command: 'uwsgi -c /app/conf/uwsgi.ini'
+    # this is a bit counter-intuitive, but we can just always use the prod config and override it
+    # locally for development. this helps with making deployment easier
+    environment:
+      DJANGO_SETTINGS_MODULE: 'server.settings_prod'
+    secrets:
+      - db_password
+      - django_secret
 
   # reuse the same config as the django container but with a different command
   # this eliminates the need to install all dependencies in two containers
@@ -20,16 +27,19 @@ services:
       - redis
       - db
     command: 'celery -A server worker --loglevel INFO'
-    # this is a bit counter-intuitive, but we can just always use the prod config for celery since
-    # otherwise it'll look for redis at localhost
-    environment:
-      DJANGO_SETTINGS_MODULE: 'server.settings_prod'
 
   redis:
     image: 'redis'
 
   db:
     image: 'postgres'
+    environment:
+      POSTGRES_USER: 'csci_tool'
+      POSTGRES_PASSWORD_FILE: '/run/secrets/db_password'
+      POSTGRES_DB: 'csci_tool'
+    secrets:
+      - db_password
+      - django_secret
 
   nginx:
     image: nginx
@@ -43,3 +53,10 @@ services:
       - './static/:/usr/share/nginx/django_static:ro'
     ports:
       - 8000:8000
+
+
+secrets:
+  db_password:
+    external: true
+  django_secret:
+    external: true

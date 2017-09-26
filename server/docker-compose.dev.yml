@@ -1,0 +1,19 @@
+version: '3.1'
+
+services:
+  django:
+    environment:
+      DJANGO_SETTINGS_MODULE: 'server.settings'
+
+  db:
+    environment:
+      POSTGRES_USER: 'csci_tool'
+      POSTGRES_PASSWORD: 'development'
+      POSTGRES_DB: 'csci_tool'
+
+  celery:
+    environment:
+      DJANGO_SETTINGS_MODULE: 'server.settings_prod'
+    secrets:
+      - db_password
+      - django_secret
