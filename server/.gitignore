@@ -2,6 +2,9 @@ db.sqlite3
 dump.rdb
 tmp/
 
+# static files are collected and stored here but we don't want to pollute git
+static/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
