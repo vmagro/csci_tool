@@ -3,7 +3,6 @@ version: '3.1'
 services:
   django: &django
     build: .
-    image: do.vinn.ie:5000/csci_tool
     links:
       - db
       - redis
@@ -59,3 +58,10 @@ services:
       - django
     links:
       - django
+
+  letsencrypt-nginx-proxy-companion:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+    volumes_from:
+      - 'nginx-proxy'
