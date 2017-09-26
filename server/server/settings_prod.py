@@ -40,8 +40,8 @@ except:
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'csci_server',
-        'USER': 'csci_server',
+        'NAME': 'csci_tool',
+        'USER': 'csci_tool',
         'PASSWORD': DB_PASSWORD,
         'HOST': 'db',
         'PORT': '',
