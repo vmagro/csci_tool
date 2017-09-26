@@ -4,8 +4,6 @@ Production settings for server app.
 Based on the normal settings, we just override the options we want to change in prod.
 """
 
-import os
-
 # import all the options in settings and just override the ones we want
 from .settings import *  # noqa
 
