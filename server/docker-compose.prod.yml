@@ -4,6 +4,9 @@ services:
   django:
     environment:
       DJANGO_SETTINGS_MODULE: 'server.settings_prod'
+    secrets:
+      - db_password
+      - django_secret
 
   db:
     environment:
@@ -18,3 +21,10 @@ services:
       DJANGO_SETTINGS_MODULE: 'server.settings_prod'
     secrets:
       - db_password
+      - django_secret
+
+secrets:
+  db_password:
+    external: true
+  django_secret:
+    external: true
