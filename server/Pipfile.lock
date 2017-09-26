@@ -279,6 +279,12 @@
             ],
             "version": "==1.22"
         },
+        "uwsgi": {
+            "hashes": [
+                "sha256:572ef9696b97595b4f44f6198fe8c06e6f4e6351d930d22e5330b071391272ff"
+            ],
+            "version": "==2.0.15"
+        },
         "vine": {
             "hashes": [
                 "sha256:6849544be74ec3638e84d90bc1cf2e1e9224cc10d96cd4383ec3f69e9bce077b",

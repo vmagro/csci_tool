@@ -27,5 +27,6 @@ pytest-mock = "*"
 pytest-django = "*"
 coreapi = "*"
 python-dateutil = "*"
+uwsgi = "*"
 
 
