@@ -28,5 +28,6 @@ pytest-django = "*"
 coreapi = "*"
 python-dateutil = "*"
 uwsgi = "*"
+psycopg2 = "*"
 
 
