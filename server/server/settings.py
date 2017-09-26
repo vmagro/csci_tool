@@ -127,6 +127,7 @@ CELERY_RESULT_BACKEND = 'redis'
 CELERY_ACCEPT_CONTENT = ['pickle']
 CELERY_RESULT_SERIALIZER = 'pickle'
 CELERY_TASK_SERIALIZER = 'pickle'
+CELERY_BROKER_URL = 'redis://localhost'
 
 
 # rest framework settings

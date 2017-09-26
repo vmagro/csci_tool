@@ -1,0 +1,18 @@
+services:
+  django:
+    environment:
+      DJANGO_SETTINGS_MODULE: 'server.settings_prod'
+
+  db:
+    environment:
+      POSTGRES_USER: 'csci_server'
+      POSTGRES_PASSWORD_FILE: '/run/secrets/db_password'
+      POSTGRES_DB: 'csci_server'
+    secrets:
+      - db_password
+
+  celery:
+    environment:
+      DJANGO_SETTINGS_MODULE: 'server.settings_prod'
+    secrets:
+      - db_password
