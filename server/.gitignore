@@ -1,5 +1,6 @@
 db.sqlite3
 dump.rdb
+tmp/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
