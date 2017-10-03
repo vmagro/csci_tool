@@ -1,6 +1,7 @@
 import argparse
 import logging
 from os import path
+import datetime
 
 from .base import BaseCommand
 from ..config import Config
@@ -19,6 +20,7 @@ class CollectCommand(BaseCommand):
         self.add_argument('students', help='students file', nargs='?',
                           type=argparse.FileType('r'),
                           default=None)
+        self.add_argument('deadline', help='deadline as a unix epoch', default=None)
 
     def run(self, args):
         assignment = args.assignment
@@ -39,6 +41,23 @@ class CollectCommand(BaseCommand):
                     path=dest_dir,
                     url=student.repo_url
                 )
+                # if we were given a deadline, update the submodule to the specific commit
+                if args.deadline is not None:
+                    # get the latest commit before the deadline
+                    deadline = datetime.datetime.fromtimestamp(int(args.deadline))
+                    sha = None
+                    repo_fqn = config.github_org + '/' + student.repo_name
+                    # must use fully qualified repo name with org
+                    repo = github.get_repo(repo_fqn)
+                    for c in repo.get_commits():
+                        if c.commit.author.date <= deadline:
+                            sha = c.sha
+                            break
+                    sub.module().git.checkout(sha)
+                    logger.debug('Adding to index')
+                    # this magic incantation is required to get GitPython to commit
+                    sub.binsha = sub.module().head.commit.binsha
+                    meta_repo.index.add([sub])
 
                 logger.info('Collected %s at %s into %s', student.unix_name,
                             sub.hexsha, dest_dir)
@@ -52,8 +71,9 @@ class CollectCommand(BaseCommand):
 If you think this was a mistake or you want to submit this assignment late, \
 please fill out the late form.'.format(assignment)
                 commit.create_comment(comment)
-            except:
+            except Exception as e:
                 logger.error('Failed to collect %s', student.unix_name)
+                logger.error(e)
                 failures.append(student)
 
         if failures:
