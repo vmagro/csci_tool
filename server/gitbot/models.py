@@ -3,11 +3,14 @@
 from django.db import models
 from django.core.validators import validate_comma_separated_integer_list
 
-from .app_settings import GITHUB_ORG
+from .course_settings import CourseSettings
 
 
 class Course(models.Model):
     name = models.CharField(max_length=100, primary_key=True)
+
+    def settings(self):
+        return CourseSettings(self)
 
     def __str__(self):
         """Return human-readable representation."""
