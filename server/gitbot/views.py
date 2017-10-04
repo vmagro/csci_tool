@@ -3,9 +3,14 @@ from rest_framework import viewsets
 from django.http import StreamingHttpResponse
 from rest_framework.decorators import detail_route
 
-from .models import Student, Assignment
-from .serializers import StudentSerializer, AssignmentSerializer
+from .models import Course, Student, Assignment
+from .serializers import CourseSerializer, StudentSerializer, AssignmentSerializer
 from . import tasks
+
+
+class CourseViewSet(viewsets.ModelViewSet):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
 
 
 class StudentViewSet(viewsets.ModelViewSet):

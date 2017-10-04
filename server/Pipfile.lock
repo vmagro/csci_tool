@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "9280c94b5767cb50cb69ac651a1edc919c6ec289d90d561ccd39475c606d7017"
+            "sha256": "bfe497afffa3cd01c5d6f1a450b11224949abaaf9058b331bca5de52850a71af"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -16,7 +16,7 @@
             "python_version": "3.6",
             "sys_platform": "darwin"
         },
-        "pipfile-spec": 3,
+        "pipfile-spec": 6,
         "requires": {},
         "sources": [
             {
@@ -101,6 +101,21 @@
             ],
             "version": "==3.6.4"
         },
+        "drf-nested-routers": {
+            "hashes": [
+                "sha256:3346bcfb151d221d499b3b7932cc6e5cee005ea50f1343a2f5cd2f85e7b1d77f",
+                "sha256:818fcc37b6cafff52f4afae012b8de85970a1b931f1e47c2f07a24fd141eb476"
+            ],
+            "version": "==0.90.0"
+        },
+        "funcsigs": {
+            "hashes": [
+                "sha256:330cc27ccbf7f1e992e69fef78261dc7c6569012cf397db8d3de0234e6c937ca",
+                "sha256:a7bb0f2cf3a3fd1ab2732cb49eba4252c2af4240442415b4abce3b87022a8f50"
+            ],
+            "markers": "python_version < '3.3'",
+            "version": "==1.0.2"
+        },
         "gitdb2": {
             "hashes": [
                 "sha256:903e3fe1753d76796e35429cc9ce8685d9958fe5ba68ceaf315c5b9cbabc99d3",
@@ -148,12 +163,27 @@
             ],
             "version": "==1.0"
         },
+        "mock": {
+            "hashes": [
+                "sha256:5ce3c71c5545b472da17b72268978914d0252980348636840bd34a00b5cc96c1",
+                "sha256:b158b6df76edd239b8208d481dc46b6afd45a846b7812ff0ce58971cf5bc8bba"
+            ],
+            "markers": "python_version == '2.6' or python_version == '2.7'",
+            "version": "==2.0.0"
+        },
         "mypy": {
             "hashes": [
                 "sha256:4c1910b8166db2b25b8e8f661a1a2eaef60ed8eaf4c5b67f5592fafcdb8d8749",
                 "sha256:9d30df20cd937b80cfc6007d75426f27a232789cfa288c63bf9370f2542c9658"
             ],
             "version": "==0.521"
+        },
+        "pbr": {
+            "hashes": [
+                "sha256:60c25b7dfd054ef9bb0ae327af949dd4676aa09ac3a9471cdc871d8a9213f9ac",
+                "sha256:05f61c71aaefc02d8e37c0a3eeb9815ff526ea28b3b76324769e6158d7f95be1"
+            ],
+            "version": "==3.1.1"
         },
         "psycopg2": {
             "hashes": [
@@ -299,6 +329,15 @@
                 "sha256:73f09aac0119f6664a3f471a1ec1c9b719f572bc9212913cea96a78b22c2e96e"
             ],
             "version": "==1.0.4"
+        },
+        "typing": {
+            "hashes": [
+                "sha256:349b1f9c109c84b53ac79ac1d822eaa68fc91d63b321bd9392df15098f746f53",
+                "sha256:63a8255fe7c6269916baa440eb9b6a67139b0b97a01af632e7bd2842e1e02f15",
+                "sha256:d514bd84b284dd3e844f0305ac07511f097e325171f6cc4a20878d11ad771849"
+            ],
+            "markers": "python_version < '3.5'",
+            "version": "==3.6.2"
         },
         "uritemplate": {
             "hashes": [

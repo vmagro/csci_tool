@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 g = Github(BOT_ACCESSTOKEN)
 
-org = g.get_organization(GITHUB_ORG)
+# org = g.get_organization(GITHUB_ORG)
 
 
 def user_exists(username: str) -> bool:
