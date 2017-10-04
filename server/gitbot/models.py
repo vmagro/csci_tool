@@ -6,12 +6,17 @@ from django.core.validators import validate_comma_separated_integer_list
 from .app_settings import GITHUB_ORG
 
 
+class Course(models.Model):
+    name = models.CharField(max_length=100, primary_key=True)
+
+
 class Student(models.Model):
     """A Student with a repo that we will give/collect assignments to/from."""
 
-    usc_email = models.EmailField(unique=True)
-    usc_id = models.CharField(max_length=20, unique=True)
-    github_username = models.CharField(max_length=100, unique=True)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    usc_email = models.EmailField()
+    usc_id = models.CharField(max_length=20)
+    github_username = models.CharField(max_length=100)
     preferred_name = models.CharField(max_length=100)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
@@ -20,6 +25,12 @@ class Student(models.Model):
     # this is used to more safely test new versions of mutations or grading scripts as we can run on
     # only repos that are marked as canaries
     canary = models.BooleanField(default=False)
+
+    class Meta:
+        """Provide stronger uniqueness guarantees."""
+        # there can only be one student with a given email, id or github in a course
+        unique_together = (('course', 'usc_email'), ('course', 'usc_id'),
+                           ('course', 'github_username'))
 
     @property
     def unix_name(self):
@@ -54,23 +65,34 @@ class Repo(models.Model):
 class Commit(models.Model):
     """Commit that is either a user commit or a bot commit."""
 
+    repo = models.ForeignKey(Repo, on_delete=models.CASCADE)
     sha = models.CharField(max_length=200, primary_key=True)
     author = models.CharField(max_length=100)
     commit_date = models.DateTimeField()
     push_date = models.DateTimeField()
     message = models.CharField(max_length=200)
-    repo = models.ForeignKey(Repo, on_delete=models.CASCADE)
+
+    class Meta:
+        """Provide stronger uniqueness guarantees."""
+
+        unique_together = ('repo', 'sha')
 
 
 class Assignment(models.Model):
     """An Assignment is a directory in the meta repo that can be assigned and graded."""
 
-    path = models.CharField(max_length=100, primary_key=True, editable=False)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    path = models.CharField(max_length=100, editable=False)
     # when the assignment will be collected
     due_date = models.DateTimeField(null=True, editable=False)
 
     # human-readable status message about this assignment
     status = models.CharField(max_length=200)
+
+    class Meta:
+        """There can only be one assignment model for each path in one course."""
+
+        unique_together = ('course', 'path')
 
     @property
     def name(self):
