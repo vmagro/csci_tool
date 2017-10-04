@@ -16,7 +16,8 @@ g = Github(BOT_ACCESSTOKEN)
 def user_exists(username: str) -> bool:
     """Check if a user exists or not."""
     try:
-        g.get_user(username)
+        # we don't need a logged-in user for this - do anonymously to keep things simple
+        Github().get_user(username)
         return True
     except GithubException:
         return False
