@@ -61,12 +61,18 @@ class Repo(models.Model):
     """A Student GitHub repo."""
 
     student = models.OneToOneField(Student, primary_key=True, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
+    # full repo name eg: (vmagro/csci_tool)
+    name = models.CharField(max_length=200)
+
+    @property
+    def short_name(self):
+        """Get the repo's short name by removing the leading organization name."""
+        return self.name[self.name.index() + 1:]
 
     @property
     def repo_url(self):
         """Cloneable URL to a REPO."""
-        return 'git@github.com:{}/{}.git'.format(GITHUB_ORG, self.name)
+        return 'git@github.com:{}.git'.format(self.name)
 
     def head_commit(self):
         """Get whatever the latest commit is to this repo at the current point in time."""

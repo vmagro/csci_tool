@@ -22,9 +22,9 @@ def push_hook(request):
         return Response('OK')
 
     # get the repo that this hook was for
-    repo_name = request.data['repository']['name']
+    repo_name = request.data['repository']['full_name']
     try:
-        repo = Repo.objects.get(pk=repo_name)
+        repo = Repo.objects.get(name=repo_name)
     except:
         # if it's the meta repo, look to see if we can find any new assignments
         if repo_name == ASSIGNMENTS_REPO_NAME:
