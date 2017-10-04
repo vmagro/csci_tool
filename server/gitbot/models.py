@@ -9,6 +9,10 @@ from .app_settings import GITHUB_ORG
 class Course(models.Model):
     name = models.CharField(max_length=100, primary_key=True)
 
+    def __str__(self):
+        """Return human-readable representation."""
+        return 'Course: {}'.format(self.name)
+
 
 class CourseSetting(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -23,6 +27,10 @@ class CourseSetting(models.Model):
     @classmethod
     def get_setting(cls, course, key):
         return cls.objects.get(course=course, key=key)
+
+    def __str__(self):
+        """Return human-readable representation."""
+        return 'Setting for {} - {}: {}'.format(self.course.name, self.key, self.value)
 
 
 class Student(models.Model):
