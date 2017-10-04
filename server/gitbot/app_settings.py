@@ -13,6 +13,7 @@ ASSIGNMENTS_REPO_NAME = getattr(settings, 'GITBOT_ASSIGNMENTS_REPO', 'assignment
 ASSIGNMENTS_REPO_URL = 'git@github.com/{}:{}.git'.format(GITHUB_ORG, ASSIGNMENTS_REPO_NAME)
 ASSIGNMENTS_REPO_PATH = getattr(settings, 'GITBOT_ASSIGNMENTS_REPO_PATH', '/tmp/assignments_repo')
 GRADERS_TEAM = getattr(settings, 'GITBOT_GRADERS_TEAM', 'graders')
+HOOK_URL = getattr(settings, 'GITBOT_HOOK_URL', 'https://cscitool.vinn.ie/gitbot/hook')
 
 
 STUDENT_REPO_NAME_FORMAT = getattr(settings, 'GITBOT_STUDENT_REPO_NAME', 'hw_{unix_name}')
