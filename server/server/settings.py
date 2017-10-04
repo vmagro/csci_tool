@@ -79,6 +79,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        # each request has a transaction, if the view raises and exception, it is rolled back
+        'ATOMIC_REQUESTS': True,
     }
 }
 
