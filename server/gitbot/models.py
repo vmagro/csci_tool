@@ -10,6 +10,21 @@ class Course(models.Model):
     name = models.CharField(max_length=100, primary_key=True)
 
 
+class CourseSetting(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    key = models.CharField(max_length=200)
+    value = models.CharField(max_length=200)
+
+    class Meta:
+        """A setting key must be unique in a course."""
+
+        unique_together = ('course', 'key')
+
+    @classmethod
+    def get_setting(cls, course, key):
+        return cls.objects.get(course=course, key=key)
+
+
 class Student(models.Model):
     """A Student with a repo that we will give/collect assignments to/from."""
 
