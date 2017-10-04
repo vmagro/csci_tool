@@ -2,6 +2,9 @@ db.sqlite3
 dump.rdb
 tmp/
 
+# this has secret production info
+production.env
+
 # static files are collected and stored here but we don't want to pollute git
 static/
 
