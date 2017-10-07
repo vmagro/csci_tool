@@ -82,8 +82,12 @@ class Repo(models.Model):
 
     @property
     def repo_url(self):
-        """Cloneable URL to a REPO."""
-        return 'git@github.com:{}.git'.format(self.name)
+        """Cloneable URL to a Repo."""
+        # get the bot username and token from the course settings
+        settings = self.student.course.settings()
+        username = settings.bot_username
+        token = settings.bot_token
+        return 'https://{}:{}@github.com:{}.git'.format(username, token, self.name)
 
     def head_commit(self):
         """Get whatever the latest commit is to this repo at the current point in time."""

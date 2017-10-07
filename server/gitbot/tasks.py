@@ -6,8 +6,7 @@ from celery import shared_task, chain, group
 from celery.utils.log import get_task_logger
 
 from .app_settings import (
-    BOT_USERNAME as author_name, BOT_EMAIL as author_email,
-    ASSIGNMENTS_REPO_URL, ASSIGNMENTS_REPO_PATH
+    ASSIGNMENTS_REPO_PATH
 )
 from .models import Student, Assignment, Submission, Mutation
 from .repo import LocalRepo
@@ -86,6 +85,7 @@ def mutate_repo(repo: Type[LocalRepo], assignment: Type[Assignment]) -> (Type[Lo
     """
     logger.info('Importing mutation for %s', assignment.name)
     logger.info('Applying mutation')
+    # TODO: actually do the mutation
     logger.info('Applied mutation')
     commit_message = 'My super awesome commit message'
     logger.debug('Commit message: %s', commit_message)
@@ -98,7 +98,9 @@ def commit_repo(repo_and_commit: (Type[LocalRepo], str), assignment: Type[Assign
     """Add all local files and commit any changes to the repo."""
     repo, commit_message = repo_and_commit
     logger.info('Committing repo at %s', repo.path)
-    sha = repo.commit(author_name, author_email, commit_message)
+    # get the bot username and email from the course settings
+    settings = student.course.settings()
+    sha = repo.commit(settings.bot_username, settings.bot_email, commit_message)
     mutation = Mutation(student=student, sha=sha, assignment=assignment)
     mutation.save()
     return repo
