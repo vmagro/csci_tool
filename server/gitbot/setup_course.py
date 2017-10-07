@@ -1,12 +1,15 @@
 """Code that supports creating a new course and GitHub stuff."""
 
 import logging
+import pathlib
+from distutils import dir_util
 
 from rest_framework.response import Response
 
 from github import Github, GithubException
 
 from .models import Course, CourseSetting
+from .repo import LocalRepo
 
 
 logger = logging.getLogger(__name__)
@@ -38,8 +41,6 @@ def setup_course(request):
     settings = course.settings()
     github = Github(settings.bot_token)
     org = github.get_organization(settings.github_org)
-
-    # Make a new SSH key for the bot and add it to GitHub
 
     # Check if the assignments repo exists and if not create it
     try:
@@ -77,5 +78,26 @@ def setup_course(request):
         })
         logger.info('Created hook "%s"', hook_url)
     ensure_hook()
+
+    # download the assignments repo and store its path in the database
+    def clone_assignments_repo():
+        assignments_path = pathlib.Path.home() / '.csci_tool' / course.name + '_assignments'
+        if assignments_path.exists():
+            logger.info('Assignments repo path already exists, deleting it')
+            dir_util.remove_tree(assignments_path)
+        assignments_path.mkdir(parents=True)
+
+        logger.info('Cloning assignments repo')
+        settings = course.settings()
+        username = settings.bot_username
+        token = settings.bot_token
+        org = settings.github_org
+        repo_name = settings.assignments_repo
+        url = 'https://{}:{}@github.com/{}/{}.git'.format(username, token, org, repo_name)
+        LocalRepo.clone_from_url(url, assignments_path)
+
+        CourseSetting(course=course, key='assignments_repo_url', value=url).save()
+        CourseSetting(course=course, key='assignments_repo_path', value=assignments_path).save()
+    clone_assignments_repo()
 
     return Response('OK')

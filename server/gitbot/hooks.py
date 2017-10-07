@@ -6,8 +6,7 @@ import logging
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .app_settings import ASSIGNMENTS_REPO_NAME
-from .models import Repo, Commit
+from .models import Repo, Commit, CourseSetting
 from .tasks import update_assignment_repo, look_for_assignments
 
 logger = logging.getLogger(__name__)
@@ -21,13 +20,25 @@ def push_hook(request):
         logger.warning('Not a commit on the master branch, just ignore it')
         return Response('OK')
 
+    # get the course based on the organization that the hook came from
+    organization = request.data['repository']['full_name']
+    # the org comes before the slash in the repo name
+    organization = organization[:organization.index('/')]
+    # try to find a CourseSetting that has this as an organization
+    try:
+        setting = CourseSetting.find(key='github_org', value=organization).get()
+        course = setting.course
+    except CourseSetting.DoesNotExist:
+        logger.warning('Don\'t have the organization "%s" registered.', organization)
+        return Response('Organization not found.')
+
     # get the repo that this hook was for
     repo_name = request.data['repository']['full_name']
     try:
         repo = Repo.objects.get(name=repo_name)
     except:
         # if it's the meta repo, look to see if we can find any new assignments
-        if repo_name == ASSIGNMENTS_REPO_NAME:
+        if repo_name == course.settings().assignments_repo:
             logger.info('Got a push for the meta repo, looking for new assignments')
             update_assignment_repo.apply_async(link=look_for_assignments.s())
         else:

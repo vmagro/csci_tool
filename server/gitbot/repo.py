@@ -6,7 +6,6 @@ import subprocess
 import tempfile
 from typing import Type
 
-from .app_settings import BOT_PRIVATE_KEY_PATH as private_key_path
 from .models import Repo as DBRepo
 
 
@@ -39,13 +38,8 @@ class LocalRepo(object):
 
     def run(self, cmd, **kwargs):
         """Run the command list through subprocess in the repo working directory."""
-        # if they're using a private key path, set it up so that git will use it
-        env = {}
-        if private_key_path:
-            env['GIT_SSH_COMMAND'] = 'ssh -i {}'.format(private_key_path)
-
         try:
-            return subprocess.run(cmd, check=True, cwd=self.path, env=env,
+            return subprocess.run(cmd, check=True, cwd=self.path,
                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
         except subprocess.CalledProcessError as e:
             logger.error('Subprocess failed')

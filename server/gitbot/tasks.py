@@ -5,10 +5,7 @@ from typing import Type, List
 from celery import shared_task, chain, group
 from celery.utils.log import get_task_logger
 
-from .app_settings import (
-    ASSIGNMENTS_REPO_PATH
-)
-from .models import Student, Assignment, Submission, Mutation
+from .models import Student, Assignment, Submission, Mutation, Course
 from .repo import LocalRepo
 from .assignment_utils import assignment_status
 
@@ -16,15 +13,18 @@ logger = get_task_logger(__name__)
 
 
 @shared_task
-def update_assignment_repo() -> Type[LocalRepo]:
+def update_assignment_repo(course: Type[Course]) -> Type[LocalRepo]:
     """Update to or clone the latest version of the assigments repo."""
-    if path.exists(ASSIGNMENTS_REPO_PATH):
+    repo_path = course.settings().assignments_repo_path
+    settings = course.settings()
+    if path.exists(repo_path):
         logger.info('Assignments repo exists already, pulling any changes')
-        repo = LocalRepo(ASSIGNMENTS_REPO_PATH)
+        repo = LocalRepo(settings.assignments_repo_path)
         repo.pull()
     else:
         logger.info('Assignments repo does not exist, cloning it now')
-        repo = LocalRepo.clone_from_url(ASSIGNMENTS_REPO_URL, ASSIGNMENTS_REPO_PATH)
+        repo = LocalRepo.clone_from_url(settings.assignments_repo_url,
+                                        settings.assignments_repo_path)
     return repo
 
 
