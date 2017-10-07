@@ -5,12 +5,17 @@ from rest_framework.decorators import detail_route
 
 from .models import Course, Student, Assignment
 from .serializers import CourseSerializer, StudentSerializer, AssignmentSerializer
+from .setup_course import setup_course
 from . import tasks
 
 
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
+
+    def create(self, request):
+        """Proxy create to the setup_course function which will interact with GitHub."""
+        return setup_course(request)
 
 
 class StudentViewSet(viewsets.ModelViewSet):

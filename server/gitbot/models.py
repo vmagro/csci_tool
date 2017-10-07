@@ -20,7 +20,7 @@ class Course(models.Model):
 class CourseSetting(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     key = models.CharField(max_length=200)
-    value = models.CharField(max_length=200)
+    value = models.TextField()
 
     class Meta:
         """A setting key must be unique in a course."""

@@ -25,11 +25,11 @@ class Api(object):
         """
         return Api(client=self.client, schema=self.schema, action=self.action+'/'+name)
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, validate=True, *args, **kwargs):
         """Allow calling as a function when action is defined."""
         assert self.action, 'action must be defined before attempting to call'
         actions = self.action.split('/')[1:]
-        response = self.client.action(self.schema, actions, params=kwargs)
+        response = self.client.action(self.schema, actions, validate=validate, params=kwargs)
         # if the results look like they're paginated, return a generator to auto paginate
         if 'next' in response:
             return paginated_generator(response)

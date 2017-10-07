@@ -9,7 +9,7 @@ from .commands import subcommands
 
 @click.group()
 @click.option('-v', '--verbose', count=True)
-@click.option('--api', default='http://localhost:8080/gitbot/schema')
+@click.option('--api', default='http://localhost:8001/gitbot/schema')
 @click.pass_context
 def cli(ctx, verbose, api):
     """Set up api client and logging level."""

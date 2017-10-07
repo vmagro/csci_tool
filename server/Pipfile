@@ -17,7 +17,7 @@ vine = "==1.1.4"
 "gitdb2" = "==2.0.2"
 gitpython = "==2.1.5"
 mypy = "==0.521"
-pygithub = "==1.35"
+pygithub = {git = "https://github.com/vmagro/PyGithub.git"}
 pyjwt = "==1.5.3"
 redis = "==2.10.6"
 "smmap2" = "==2.0.3"
