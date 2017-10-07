@@ -44,3 +44,25 @@ def test_commit(mocker):
         assert author_email == 'v+gitbot@vinnie.io', 'Author email incorrect'
         author_name = run_shell('git show --format="%an" -s HEAD', cwd=dirname)
         assert author_name == 'vmagrobot', 'Author name incorrect'
+
+
+def test_delete():
+    """Test that a repo is actually deleted."""
+    dirname = tempfile.mkdtemp()
+    # make a repo dir and 'git init' it
+    subprocess.run(['git', 'init'], cwd=dirname)
+    # instantiate the LocalRepo
+    repo = LocalRepo(dirname)
+
+    # sanity that the repo dir did exist
+    assert os.path.exists(dirname)
+    # make some files in here
+    os.chdir(dirname)
+    os.mkdir('test')
+    open(os.path.join('test', 'test.txt'), 'w').write('Hello world')
+
+    # now delete the repo
+    repo.delete()
+
+    # make sure the directory doesn't exist anymore
+    assert not os.path.exists(dirname)
