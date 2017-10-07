@@ -12,13 +12,18 @@ class CourseSettings(object):
 
     def __getitem__(self, key):
         """Allow subscript notation to access settings."""
-        return self.settings[key]
+        return self.get(key)
 
     # this allows us to do something like settings.github_org to get the github_org setting
     def __getattr__(self, key):
         """Allow dot notation to access settings."""
-        return self.settings[key]
+        return self.get(key)
 
     def get(self, key, default):
         """Allow dict-style .get to access settings."""
-        return self.settings.get(key, default)
+        val = self.settings.get(key, default)
+        if val == 'True':
+            return True
+        elif val == 'False':
+            return False
+        return val
