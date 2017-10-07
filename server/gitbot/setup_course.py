@@ -25,7 +25,7 @@ def setup_course(request):
     # now create any settings that we might have
     # some settings have sensible defaults, others do not
     settings = [('github_org', None), ('assignments_repo', 'assignments'), ('bot_email', None),
-                ('bot_token', None), ('bot_username', None), ('bot_private_key', None),
+                ('bot_token', None), ('bot_username', None),
                 ('grader_team', 'graders'), ('student_repo_format', 'hw_{unix_name}'),
                 ('student_description', 'Homework for {preferred_name} {last_name} <{usc_email}>'),
                 ('comment_on_collect', True), ('private_repos', True)

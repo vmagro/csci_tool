@@ -24,15 +24,11 @@ def course():
 @click.option('--bot-email', prompt=True)
 @click.option('--bot-username', prompt=True)
 @click.option('--bot-token', prompt=True)
-@click.option('--bot-private-key', prompt=True, type=click.File('rb'))
 @pass_api
 def setup(api, name, github_org, assignments_repo, grader_team, student_repo_format,
           student_description, comment_on_collect, private_repos,
-          bot_email, bot_token, bot_username, bot_private_key):
+          bot_email, bot_token, bot_username):
     """Create a new course on the server."""
-    # read the private key into a string first
-    bot_private_key = bot_private_key.read().decode('utf-8')
-
     response = api.courses.create(
         validate=False,
         name=name,
@@ -46,6 +42,5 @@ def setup(api, name, github_org, assignments_repo, grader_team, student_repo_for
         bot_email=bot_email,
         bot_username=bot_username,
         bot_token=bot_token,
-        bot_private_key=bot_private_key,
     )
     print(response)
