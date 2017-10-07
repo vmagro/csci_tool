@@ -26,7 +26,7 @@ class LocalRepo(object):
         """Clone a repo to local disk given a git url."""
         logger.debug('Repo path: %s', path)
         instance = LocalRepo(path)
-        subprocess.run(['git', 'clone', '--depth', '1', url, instance.path])
+        subprocess.run(['git', 'clone', '--depth', '1', url, instance.path], check=True)
         return instance
 
     @staticmethod

@@ -27,6 +27,16 @@ def test_run(mocker):
                                            stderr=subprocess.PIPE, cwd='/tmp')
 
 
+def test_clone_shallow(mocker):
+    """clone_from_url does a shallow clone."""
+    mocker.patch('subprocess.run')
+
+    LocalRepo.clone_from_url('someurl', '/tmp')
+
+    subprocess.run.assert_called_once_with(['git', 'clone', '--depth', '1', 'someurl', '/tmp'],
+                                           check=True)
+
+
 def test_commit(mocker):
     """Test that a commit is made and has the correct author and commmit information."""
     with tempfile.TemporaryDirectory() as dirname:
