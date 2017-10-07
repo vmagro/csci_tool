@@ -1,10 +1,13 @@
 """Tasks for deploying an assignment to student repos."""
 from typing import Type, List
+import os
+
 from celery import shared_task, chain, group
 from celery.utils.log import get_task_logger
 
 from .models import Student, Assignment, Mutation
 from .repo import LocalRepo
+from . import assignment_utils
 
 logger = get_task_logger(__name__)
 
@@ -20,7 +23,8 @@ def clone_repo(student: Type[Student]) -> Type[LocalRepo]:
 
 
 @shared_task
-def mutate_repo(repo: Type[LocalRepo], assignment: Type[Assignment]) -> (Type[LocalRepo], str):
+def mutate_repo(repo: Type[LocalRepo], assignment: Type[Assignment], student: Type[Student]
+                ) -> (Type[LocalRepo], str):
     """Mutate a repo by running mutate.py in the given directory.
 
     Returns:
@@ -28,10 +32,23 @@ def mutate_repo(repo: Type[LocalRepo], assignment: Type[Assignment]) -> (Type[Lo
 
     """
     logger.info('Importing mutation for %s', assignment.name)
+    # use the Assignment to find out where it lives on disk
+    base_path = assignment.course.settings().assignments_repo_path
+    assignment_path = os.path.join(base_path, assignment.path)
+    # import the mutation function
+    mutate = assignment_utils.import_mutate(assignment_path)
     logger.info('Applying mutation')
-    # TODO: actually do the mutation
+    # make the destination directory
+    dest_dir = os.path.join(repo.path, assignment.name)
+    os.makedirs(dest_dir, exist_ok=True)
+    # we want to have cwd be the destination directory in the student's repo
+    cwd = os.getcwd()
+    os.chdir(dest_dir)
+    # perform the mutation
+    commit_message = mutate(student, assignment_path)
+    # go back to original working dir
+    os.chdir(cwd)
     logger.info('Applied mutation')
-    commit_message = 'My super awesome commit message'
     logger.debug('Commit message: %s', commit_message)
     return (repo, commit_message)
 
@@ -69,7 +86,7 @@ def cleanup_repo(repo: Type[LocalRepo]):
 def give_assignment(student: Type[Student], assignment: Type[Assignment]):
     """Update a repo given an assignment. clone -> mutate -> commit -> push."""
     task = chain(clone_repo.s(student),
-                 mutate_repo.s(assignment),
+                 mutate_repo.s(assignment, student),
                  commit_repo.s(assignment, student),
                  push_repo.s(),
                  cleanup_repo.s(),
