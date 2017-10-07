@@ -81,7 +81,7 @@ def setup_course(request):
 
     # download the assignments repo and store its path in the database
     def clone_assignments_repo():
-        assignments_path = pathlib.Path.home() / '.csci_tool' / course.name + '_assignments'
+        assignments_path = pathlib.Path.home() / '.csci_tool' / (course.name + '_assignments')
         if assignments_path.exists():
             logger.info('Assignments repo path already exists, deleting it')
             dir_util.remove_tree(assignments_path)
