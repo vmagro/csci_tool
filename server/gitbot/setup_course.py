@@ -68,7 +68,7 @@ def setup_course(request):
         hook_url = 'https://{}/gitbot/hook/push'.format(host)
         hooks = org.get_hooks()
         for hook in hooks:
-            if hook.url == hook_url:
+            if hook.config['url'] == hook_url:
                 logger.debug('Found existing hook')
                 return
         logger.warning('Hook "%s" not found, making it now', hook_url)
