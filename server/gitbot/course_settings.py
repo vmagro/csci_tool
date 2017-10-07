@@ -19,7 +19,7 @@ class CourseSettings(object):
         """Allow dot notation to access settings."""
         return self.get(key)
 
-    def get(self, key, default):
+    def get(self, key, default=None):
         """Allow dict-style .get to access settings."""
         val = self.settings.get(key, default)
         if val == 'True':
