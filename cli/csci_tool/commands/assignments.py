@@ -13,10 +13,11 @@ def assignment():
 
 
 @assignment.command()
+@click.argument('course')
 @pass_api
-def list(api):
-    """List all students in the database."""
-    assignments = api.assignments.list()
+def list(api, course):
+    """List all assignments in the database."""
+    assignments = api.courses.assignments.list(course_pk=course)
     for a in assignments:
         a = Assignment(a)
         print(a)
