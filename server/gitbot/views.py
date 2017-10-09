@@ -33,7 +33,10 @@ class AssignmentViewSet(viewsets.ReadOnlyModelViewSet):
         assignment = self.get_object()
 
         # TODO: support canarying
-        students = Student.objects.all()
+        if request.data.get('canary', False):
+            students = Student.objects.filter(canary=True)
+        else:
+            students = Student.objects.all()
 
         task_group = tasks.give_assignment_to_all(students, assignment)
 
