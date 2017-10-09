@@ -21,3 +21,15 @@ def list(api, course):
     for a in assignments:
         a = Assignment(a)
         print(a)
+
+
+@assignment.command()
+@click.argument('course')
+@click.option('--assignment', prompt=True)
+@click.option('--canary/--no-canary', default=False, prompt=True)
+@pass_api
+def deploy(api, course, assignment, canary):
+    """Deploy assignment to students - either all or subset where canary=True."""
+    response = api.courses.assignments.deploy(course_pk=course,
+                                              assignment=assignment, canary=canary)
+    print(response)
