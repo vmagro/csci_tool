@@ -1,7 +1,6 @@
 """DRF Serializers for gitbot api."""
 
 from rest_framework import serializers
-from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 from rest_framework.serializers import ValidationError
 
 from .models import Course, Student, Assignment
@@ -30,9 +29,9 @@ class StudentSerializer(serializers.ModelSerializer):
         return username
 
 
-class AssignmentSerializer(NestedHyperlinkedModelSerializer):
+class AssignmentSerializer(serializers.ModelSerializer):
     """Serializer class for Assignment model."""
 
     class Meta:
         model = Assignment
-        fields = ('url', 'path', 'due_date', 'status')
+        fields = ('path', 'due_date', 'status')
