@@ -22,23 +22,24 @@ def assignment_status(path: str) -> str:
     except AssignmentError as e:
         return str(e)
     # check if the due date is valid
-    if not has_due_date(path):
-        return 'Invalid or missing due_date.txt'
+    if invalid_due_date(path):
+        return invalid_due_date(path)
     # if we were able to import mutate and grade and find a due date, the assignment seems fine
     return 'OK'
 
 
-def has_due_date(path: str) -> bool:
+def invalid_due_date(path: str) -> bool:
     """Check that the assignment at path has a valid due date."""
-    if not os.path.exists(os.path.join(path, 'due_date.txt')):
-        return False
+    date_path = os.path.join(path, 'due_date.txt')
+    if not os.path.exists(date_path):
+        return 'Missing due_date.txt'
     # try to parse the file as a date string
     try:
-        date_str = open(path.join(path, 'due_date.txt'), 'r').read()
+        date_str = open(date_path, 'r').read()
         dateutil.parser.parse(date_str)
-        return True
-    except:
         return False
+    except:
+        return 'Invalid due_date.txt format'
 
 
 def has_mutate(path: str) -> bool:

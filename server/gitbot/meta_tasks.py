@@ -2,6 +2,7 @@
 import os
 from os import path
 from typing import Type
+import dateutil.parser
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
@@ -29,7 +30,7 @@ def update_assignment_repo(course: Type[Course]) -> Type[LocalRepo]:
 
 
 @shared_task
-def look_for_assignments(repo: Type[LocalRepo]):
+def look_for_assignments(course: Type[Course], repo: Type[LocalRepo]):
     """Look for assignments (directories with mutate.py) in the repo and save them to db."""
     found = []
     for d in os.listdir(repo.path):
@@ -40,18 +41,20 @@ def look_for_assignments(repo: Type[LocalRepo]):
     for directory in found:
         # check if the assignment exists already in the db
         try:
-            assignment = Assignment.get(pk=directory)
+            assignment = Assignment.objects.get(course=course, path=directory)
             logger.info('Assignment "%s" already exists', directory)
             # the due date might still have been changed, let's update it just in case
             logger.info('Updating %s due date', directory)
             due_date = open(path.join(repo.path, directory, 'due_date.txt'), 'r').read()
+            due_date = dateutil.parser.parse(due_date)
             assignment.due_date = due_date
-        except:
+        except Assignment.DoesNotExist:
             # doesn't exist, lets create it
             # read the due date from a file in the directory
             due_date = open(path.join(repo.path, directory, 'due_date.txt'), 'r').read()
+            due_date = dateutil.parser.parse(due_date)
             logger.info('Creating new assignment %s, due on %s', directory, due_date)
-            assignment = Assignment(path=directory, due_date=due_date)
+            assignment = Assignment(course=course, path=directory, due_date=due_date)
         # now the assignment exists for sure, make the status string
         assignment.status = assignment_status(path.join(repo.path, directory))
         assignment.save()
