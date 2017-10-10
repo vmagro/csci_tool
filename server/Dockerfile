@@ -9,7 +9,7 @@ EXPOSE 8000
 # create the user now but use it later since we need to be root to set things up
 RUN useradd -ms /bin/true uwsgi
 
-RUN pip install pipenv
+RUN pip install -Iv pipenv==8.2.6
 
 # just copy the dependencies at first so that docker can cache the installation
 WORKDIR /tmp
