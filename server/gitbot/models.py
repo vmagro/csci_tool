@@ -4,6 +4,7 @@ from django.db import models
 from django.core.validators import validate_comma_separated_integer_list
 
 from .course_settings import CourseSettings
+from .github import github_for_course
 
 
 class Course(models.Model):
@@ -92,6 +93,11 @@ class Repo(models.Model):
     def head_commit(self):
         """Get whatever the latest commit is to this repo at the current point in time."""
         return self.commit_set.order_by('-commit_date').first()
+
+    def github(self):
+        """Get the PyGithub object for this repo."""
+        github = github_for_course(self.course)
+        return github.get_repo(self.name)
 
     def __str__(self):
         """Return human-readable representation."""

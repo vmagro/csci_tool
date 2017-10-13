@@ -15,7 +15,13 @@ def collect_assignment(student: Type[Student], assignment: Type[Assignment]):
     logger.info('Latest commit for %s: %s', student.unix_name, commit.sha)
     submission = Submission(student=student, assignment=assignment, commit=commit)
     submission.save()
-    # TODO comment on the commit so the student knows we collected it
+
+    # comment on this commit on GitHub
+    repo = student.repo.github()
+    commit = repo.get_commits(commit.sha)[0]
+    message = student.course.settings().collect_comment
+    message = message.format(assignment.name)
+    commit.create_comment(message)
 
 
 @shared_task

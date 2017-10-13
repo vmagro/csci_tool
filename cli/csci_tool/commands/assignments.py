@@ -25,11 +25,23 @@ def list(api, course):
 
 @assignment.command()
 @click.argument('course')
-@click.option('--assignment', prompt=True)
+@click.argument('assignment')
 @click.option('--canary/--no-canary', default=False, prompt=True)
 @pass_api
 def deploy(api, course, assignment, canary):
     """Deploy assignment to students - either all or subset where canary=True."""
-    response = api.courses.assignments.deploy(course_pk=course,
-                                              assignment=assignment, canary=canary)
+    response = api.courses.assignments.deploy(course_pk=course, assignment=assignment,
+                                              canary=canary, validate=False)
+    print(response)
+
+
+@assignment.command()
+@click.argument('course')
+@click.argument('assignment')
+@click.option('--canary/--no-canary', default=False, prompt=True)
+@pass_api
+def collect(api, course, assignment, canary):
+    """Collect assignment from students - either all or subset where canary=True."""
+    response = api.courses.assignments.collect(course_pk=course, assignment=assignment,
+                                               canary=canary, validate=False)
     print(response)

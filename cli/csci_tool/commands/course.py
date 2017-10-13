@@ -20,13 +20,16 @@ def course():
 @click.option('--student-description', prompt=True,
               default='Homework for {preferred_name} {last_name} <{usc_email}>')
 @click.option('--comment-on-collect/--no-comment-on-collect', prompt=True, default=True)
+@click.option('--comment-message', prompt=True, default='This commit was collected for {}, if you \
+think this was a mistake, please contact course staff. If you would like to submit this project \
+using late days, please use the late day form.')
 @click.option('--private-repos/--no-private-repos', prompt=True, default=True)
 @click.option('--bot-email', prompt=True)
 @click.option('--bot-username', prompt=True)
 @click.option('--bot-token', prompt=True)
 @pass_api
 def setup(api, name, github_org, assignments_repo, grader_team, student_repo_format,
-          student_description, comment_on_collect, private_repos,
+          student_description, comment_on_collect, comment_message, private_repos,
           bot_email, bot_token, bot_username):
     """Create a new course on the server."""
     response = api.courses.create(
@@ -38,6 +41,7 @@ def setup(api, name, github_org, assignments_repo, grader_team, student_repo_for
         student_repo_format=student_repo_format,
         student_description=student_description,
         comment_on_collect=comment_on_collect,
+        comment_message=comment_message,
         private_repos=private_repos,
         bot_email=bot_email,
         bot_username=bot_username,

@@ -1,7 +1,9 @@
 """GitHub utils."""
 
+from typing import Type
 import logging
 from github import Github, GithubException
+
 
 logger = logging.getLogger(__name__)
 
@@ -18,3 +20,9 @@ def user_exists(username: str) -> bool:
         return False
     except:
         raise
+
+
+def github_for_course(course) -> Type[Github]:
+    """Get an authenticated PyGithub client for the given course."""
+    settings = course.settings()
+    return Github(settings.bot_token)

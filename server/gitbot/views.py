@@ -29,16 +29,38 @@ class AssignmentViewSet(viewsets.ReadOnlyModelViewSet):
 
     @detail_route(methods=['POST'])
     def deploy(self, request, pk=None):
-        """Deploy assignment to all student repos."""
+        """Deploy assignment to student repos."""
         assignment = self.get_object()
 
-        # TODO: support canarying
         if request.data.get('canary', False):
             students = Student.objects.filter(canary=True)
         else:
             students = Student.objects.all()
 
         task_group = tasks.give_assignment_to_all(students, assignment)
+
+        def stream_generator():
+            def cb(task_id, value):
+                print('Got task result')
+                yield '{}\n'.format(task_id)
+            print('joining')
+            yield task_group.get(callback=cb)
+            print('joined')
+
+        content = stream_generator()
+        return StreamingHttpResponse(streaming_content=content)
+
+    @detail_route(methods=['POST'])
+    def collect(self, request, pk=None):
+        """Collect assignment from student repos."""
+        assignment = self.get_object()
+
+        if request.data.get('canary', False):
+            students = Student.objects.filter(canary=True)
+        else:
+            students = Student.objects.all()
+
+        task_group = tasks.collect_assignment_from_all(students, assignment)
 
         def stream_generator():
             def cb(task_id, value):
