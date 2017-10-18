@@ -20,7 +20,7 @@ class CollectCommand(BaseCommand):
         self.add_argument('students', help='students file', nargs='?',
                           type=argparse.FileType('r'),
                           default=None)
-        self.add_argument('deadline', help='deadline as a unix epoch', default=None)
+        self.add_argument('deadline', help='deadline as a unix epoch', nargs='?', default=None)
 
     def run(self, args):
         assignment = args.assignment
