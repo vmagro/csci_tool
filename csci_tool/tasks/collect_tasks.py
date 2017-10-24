@@ -1,14 +1,12 @@
 """Tasks for collecting assignments from student repos."""
 from typing import Type, List
-from celery import shared_task, group
-from celery.utils.log import get_task_logger
+import logging
 
-from .models import Student, Assignment, Submission
+from ..models import Student, Assignment, Submission
 
-logger = get_task_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
-@shared_task
 def collect_assignment(student: Type[Student], assignment: Type[Assignment]):
     """Save a Submission object tying a Student Commit to the given Assignment."""
     commit = student.repo.head_commit()
@@ -24,7 +22,6 @@ def collect_assignment(student: Type[Student], assignment: Type[Assignment]):
     commit.create_comment(message)
 
 
-@shared_task
 def collect_assignment_from_all(students: List[Student], assignment: Type[Assignment]):
     """Collect an Assignment from a list of students."""
     collect_tasks = [collect_assignment.s(student, assignment) for student in students]

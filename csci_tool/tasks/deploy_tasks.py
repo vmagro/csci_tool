@@ -1,18 +1,15 @@
 """Tasks for deploying an assignment to student repos."""
 from typing import Type, List
+import logging
 import os
 
-from celery import shared_task, chain, group
-from celery.utils.log import get_task_logger
+from ..models import Student, Assignment, Mutation
+from ..repo import LocalRepo
+from .. import assignment_utils
 
-from .models import Student, Assignment, Mutation
-from .repo import LocalRepo
-from . import assignment_utils
-
-logger = get_task_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
-@shared_task
 def clone_repo(student: Type[Student]) -> Type[LocalRepo]:
     """Clones a repo for a Student."""
     logger.info('Cloning repo for %s', student)
@@ -22,7 +19,6 @@ def clone_repo(student: Type[Student]) -> Type[LocalRepo]:
     return local_repo
 
 
-@shared_task
 def mutate_repo(repo: Type[LocalRepo], assignment: Type[Assignment], student: Type[Student]
                 ) -> (Type[LocalRepo], str):
     """Mutate a repo by running mutate.py in the given directory.
@@ -53,7 +49,6 @@ def mutate_repo(repo: Type[LocalRepo], assignment: Type[Assignment], student: Ty
     return (repo, commit_message)
 
 
-@shared_task
 def commit_repo(repo_and_commit: (Type[LocalRepo], str), assignment: Type[Assignment],
                 student: Type[Student]) -> Type[LocalRepo]:
     """Add all local files and commit any changes to the repo."""
@@ -67,7 +62,6 @@ def commit_repo(repo_and_commit: (Type[LocalRepo], str), assignment: Type[Assign
     return repo
 
 
-@shared_task
 def push_repo(repo: Type[LocalRepo]):
     """Push new repo commit to GitHub."""
     logger.info('Pushing repo at %s to GitHub', repo.path)
@@ -76,13 +70,11 @@ def push_repo(repo: Type[LocalRepo]):
     return repo
 
 
-@shared_task
 def cleanup_repo(repo: Type[LocalRepo]):
     """Delete the files of a repo from disk when we're done with it."""
     repo.delete()
 
 
-@shared_task
 def give_assignment(student: Type[Student], assignment: Type[Assignment]):
     """Update a repo given an assignment. clone -> mutate -> commit -> push."""
     task = chain(clone_repo.s(student),
@@ -95,7 +87,6 @@ def give_assignment(student: Type[Student], assignment: Type[Assignment]):
     return task.apply_async()
 
 
-@shared_task
 def give_assignment_to_all(students: List[Student], assignment: Type[Assignment]):
     """Update a list of students's repos using the mutation from an assignment."""
     give_tasks = [give_assignment.s(student, assignment) for student in students]
