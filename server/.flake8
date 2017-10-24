@@ -1,3 +1,0 @@
-[flake8]
-exclude = docs/*, */migrations/* server/settings.py
-max-line-length=100
