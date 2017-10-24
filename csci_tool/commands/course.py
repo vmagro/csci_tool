@@ -2,7 +2,7 @@
 
 import click
 
-from .base import pass_api
+from .base import pass_config
 
 
 @click.group()
@@ -27,8 +27,8 @@ using late days, please use the late day form.')
 @click.option('--bot-email', prompt=True)
 @click.option('--bot-username', prompt=True)
 @click.option('--bot-token', prompt=True)
-@pass_api
-def setup(api, name, github_org, assignments_repo, grader_team, student_repo_format,
+@pass_config
+def setup(config, name, github_org, assignments_repo, grader_team, student_repo_format,
           student_description, comment_on_collect, comment_message, private_repos,
           bot_email, bot_token, bot_username):
     """Create a new course on the server."""

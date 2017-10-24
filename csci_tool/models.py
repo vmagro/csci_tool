@@ -1,6 +1,10 @@
 import dateutil.parser
 
+
 class Student(object):
+
+    __slots__ = ['usc_email', 'usc_id', 'github_username',
+                 'preferred_name', 'first_name', 'last_name']
 
     def __init__(self, d: dict):
         self.usc_email = d['usc_email']

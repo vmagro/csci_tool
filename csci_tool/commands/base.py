@@ -1,7 +1,7 @@
 """Useful snippets for all commands."""
 import click
 
-from ..api import Api
+from ..config import Config
 
 
-pass_api = click.make_pass_decorator(Api)
+pass_config = click.make_pass_decorator(Config)
