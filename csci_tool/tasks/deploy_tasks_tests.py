@@ -5,9 +5,8 @@ import tempfile
 import subprocess
 import os
 
-import gitbot
-from gitbot.deploy_tasks import clone_repo, mutate_repo
-from gitbot.repo import LocalRepo
+from .deploy_tasks import clone_repo, mutate_repo
+from ..repo import LocalRepo
 
 
 @fixture

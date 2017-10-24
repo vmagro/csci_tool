@@ -2,7 +2,7 @@
 
 import click
 
-from .base import pass_api
+from .base import pass_config
 from ..models import Student
 
 
@@ -13,7 +13,7 @@ def student():
 
 
 @student.command()
-@pass_api
+@pass_config
 def list(api):
     """List all students in the database."""
     students = api.students.list()
@@ -29,8 +29,8 @@ def list(api):
 @click.argument('preferred_name')
 @click.argument('first_name')
 @click.argument('last_name')
-@pass_api
-def create(api, usc_email, usc_id, github_username, preferred_name, first_name, last_name):
+@pass_config
+def create(config, usc_email, usc_id, github_username, preferred_name, first_name, last_name):
     """Add a new student to the db."""
     try:
         student = api.students.create(

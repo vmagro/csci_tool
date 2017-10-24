@@ -1,14 +1,21 @@
+"""Load course settings from config file."""
+
+import yaml
+
+
 class CourseSettings(object):
+    """Settings for a course."""
 
     __slots__ = ('course', 'settings')
 
-    def __init__(self, course):
-        """Load settings from a Course model."""
-        self.course = course
-        # get all the settings at initialization time
-        self.settings = {}
-        for s in course.coursesetting_set.all():
-            self.settings[s.key] = s.value
+    @classmethod
+    def get_settings():
+        """Load from the default path (current directory)."""
+        return CourseSettings(open('./settings.yml', 'r'))
+
+    def __init__(self, input):
+        """Load settings from an input file or string."""
+        self.settings = yaml.load(input)['settings']
 
     def __getitem__(self, key):
         """Allow subscript notation to access settings."""

@@ -1,19 +1,17 @@
 """Tasks for working with the assignments/meta repo."""
+import logging
 import os
 from os import path
 from typing import Type
 import dateutil.parser
-from celery import shared_task
-from celery.utils.log import get_task_logger
 
-from .models import Assignment, Course
-from .repo import LocalRepo
-from .assignment_utils import assignment_status
+from ..models import Assignment, Course
+from ..repo import LocalRepo
+from ..assignment_utils import assignment_status
 
-logger = get_task_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
-@shared_task
 def update_assignment_repo(course: Type[Course]) -> Type[LocalRepo]:
     """Update to or clone the latest version of the assigments repo."""
     repo_path = course.settings().assignments_repo_path
@@ -29,7 +27,6 @@ def update_assignment_repo(course: Type[Course]) -> Type[LocalRepo]:
     return repo
 
 
-@shared_task
 def look_for_assignments(course: Type[Course], repo: Type[LocalRepo]):
     """Look for assignments (directories with mutate.py) in the repo and save them to db."""
     found = []
