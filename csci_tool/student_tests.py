@@ -12,7 +12,7 @@ def student():
         first_name='Stephen',
         last_name='Magro',
         preferred_name='Vinnie',
-        github_userame='vmagro',
+        github_username='vmagro',
     )
 
 
