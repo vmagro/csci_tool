@@ -3,7 +3,7 @@
 import click
 
 from .base import pass_config
-from ..models import Student
+from ..student import Student
 
 
 @click.group()

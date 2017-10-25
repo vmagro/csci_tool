@@ -42,14 +42,14 @@ def assignment(mocker, course):
 
 def test_clone_repo(mocker, student):
     """clone_repo clones a student repo in a temp dir."""
-    mocker.patch('gitbot.repo.LocalRepo.clone_repo')
+    mocker.patch('csci_tool.repo.LocalRepo.clone_repo')
     clone_repo(student)
-    assert gitbot.repo.LocalRepo.clone_repo.called_once_with(student.repo)
+    assert LocalRepo.clone_repo.called_once_with(student.repo)
 
 
 def test_mutate_repo(mocker, assignment, student):
     """mutate_repo runs the mutate function and makes a new commit."""
-    mock_import_mutate = mocker.patch('gitbot.assignment_utils.import_mutate')
+    mock_import_mutate = mocker.patch('csci_tool.assignment_utils.import_mutate')
 
     ran_in = None
 
@@ -68,6 +68,10 @@ def test_mutate_repo(mocker, assignment, student):
     with tempfile.TemporaryDirectory() as dirname:
         # make a repo dir and 'git init' it
         subprocess.run(['git', 'init'], cwd=dirname)
+
+        # cd into the directory
+        os.chdir(dirname)
+
         # instantiate the LocalRepo
         repo = LocalRepo(dirname)
 

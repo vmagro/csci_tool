@@ -1,5 +1,5 @@
 """Tests for repo functionality."""
-from gitbot.repo import LocalRepo
+from .repo import LocalRepo
 
 import os
 import tempfile
