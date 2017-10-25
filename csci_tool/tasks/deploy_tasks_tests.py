@@ -67,7 +67,7 @@ def test_mutate_repo(mocker, assignment, student):
     # create a fake LocalRepo
     with tempfile.TemporaryDirectory() as dirname:
         # make a repo dir and 'git init' it
-        subprocess.run(['git', 'init'], cwd=dirname)
+        subprocess.run(['git', 'init'], cwd=dirname, stdout=subprocess.DEVNULL)
 
         # cd into the directory
         os.chdir(dirname)
