@@ -1,6 +1,5 @@
 """Functions to do useful operations on assingment directories (mutate.py/grade.py)."""
 
-import dateutil.parser
 import importlib.util
 import os
 
@@ -21,43 +20,13 @@ def assignment_status(path: str) -> str:
         import_grade(path)
     except AssignmentError as e:
         return str(e)
-    # check if the due date is valid
-    if invalid_due_date(path):
-        return invalid_due_date(path)
     # if we were able to import mutate and grade and find a due date, the assignment seems fine
     return 'OK'
 
 
-def invalid_due_date(path: str) -> bool:
-    """Check that the assignment at path has a valid due date."""
-    date_path = os.path.join(path, 'due_date.txt')
-    if not os.path.exists(date_path):
-        return 'Missing due_date.txt'
-    # try to parse the file as a date string
-    try:
-        date_str = open(date_path, 'r').read()
-        dateutil.parser.parse(date_str)
-        return False
-    except:
-        return 'Invalid due_date.txt format'
-
-
-def has_mutate(path: str) -> bool:
-    """Check that the assignment at path has a mutate.py."""
-    return os.path.exists(os.path.join(path, 'mutate.py'))
-
-
-def has_grade(path: str) -> bool:
-    """Check that the assignment at path has a grade.py."""
-    return os.path.exists(os.path.join(path, 'mutate.py'))
-
-
 def import_name(path: str, name: str):
     """Import the module with name 'name' in the assignment directory at path."""
-    module_name = os.path.basename(path) + '.mutate'
-    # make sure that it exists first
-    if not has_mutate(path):
-        raise AssignmentError(f'No {name}')
+    module_name = os.path.basename(path) + '.' + name
     spec = importlib.util.spec_from_file_location(module_name, os.path.join(path, name))
     try:
         module = importlib.util.module_from_spec(spec)
