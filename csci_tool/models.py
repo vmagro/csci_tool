@@ -2,6 +2,8 @@
 from peewee import Model, CharField, DateTimeField, ForeignKeyField
 from playhouse.sqlite_ext import SqliteExtDatabase
 import datetime
+import atexit
+import os
 
 from .course_settings import CourseSettings
 
@@ -64,5 +66,23 @@ class Mutation(BaseModel):
 
 
 db.connect()
-db.create_tables([Student, Assignment, Submission, Mutation])
-# TODO load SQL dump
+
+# load the sql dump if we have one
+if os.path.exists('database.sql'):
+    with open('database.sql', 'r') as f:
+        sql = f.read()
+        db.get_conn().executescript(sql)
+else:
+    # if we don't have a database dump, then its safe to create the tables
+    db.create_tables([Student, Assignment, Submission, Mutation])
+
+
+# save the SQL dump at the end of program execution
+def save_dump():
+    """Save the sql dump to a file so it can be easier tracked in git."""
+    with open('database.sql', 'w') as f:
+        for line in db.get_conn().iterdump():
+            f.write('%s\n' % line)
+
+
+atexit.register(save_dump)
