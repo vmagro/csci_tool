@@ -6,8 +6,7 @@ import subprocess
 import tempfile
 from typing import Type
 
-from .models import Repo as DBRepo
-
+from .models import Student
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +29,11 @@ class LocalRepo(object):
         return instance
 
     @staticmethod
-    def clone_repo(repo_stub: Type[DBRepo]):
+    def clone_repo(student: Type[Student]):
         """Clone a repo to local disk given information from the database."""
-        logger.info('Cloning repo for %s', repo_stub.student.unix_name)
-        path = tempfile.mkdtemp(prefix='gitbot', suffix=repo_stub.student.unix_name)
-        return LocalRepo.clone_from_url(repo_stub.repo_url, path)
+        logger.info('Cloning repo for %s', student.unix_name)
+        path = tempfile.mkdtemp(prefix='gitbot', suffix=student.unix_name)
+        return LocalRepo.clone_from_url(student.repo_url, path)
 
     def run(self, cmd, **kwargs):
         """Run the command list through subprocess in the repo working directory."""

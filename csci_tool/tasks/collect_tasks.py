@@ -2,8 +2,7 @@
 from typing import Type, List
 import logging
 
-from ..student import Student
-from ..models import Assignment, Submission
+from ..models import Student, Assignment, Submission
 
 logger = logging.getLogger(__name__)
 

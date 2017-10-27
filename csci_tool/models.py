@@ -1,30 +1,68 @@
-import dateutil.parser
+"""Data models for csci_tool."""
+from peewee import Model, CharField, DateTimeField, ForeignKeyField
+from playhouse.sqlite_ext import SqliteExtDatabase
+import datetime
+
+from .course_settings import CourseSettings
+
+# just use an in-memory database so that we don't have git versioning issues
+# the database will be re-populated from a sql dump every run - the sql dump is easily diff-able
+db = SqliteExtDatabase(':memory:')
 
 
-class Assignment(object):
-
-    def __init__(self, d: dict):
-        self.path = d['path']
-        self.due_date = d['due_date']
-        self.status = d['status']
-
-    def __str__(self):
-        date = dateutil.parser.parse(self.due_date)
-        date = date.strftime('%a %b %y at %I:%M:%S %p')
-        return f'{self.path} due at {date}: "{self.status}"'
+class BaseModel(Model):
+    class Meta:
+        database = db
 
 
-class Submission(object):
-    pass
+class Student(BaseModel):
+    usc_id = CharField(unique=True)
+    unix_name = CharField(unique=True)
+    github_username = CharField(unique=True)
+    first_name = CharField()
+    last_name = CharField()
+    preferred_name = CharField()
+
+    @property
+    def usc_email(self):
+        """Get the email of the student from their unix name."""
+        return self.unix_name + '@usc.edu'
+
+    @property
+    def repo_name(self):
+        """Get a string name for the student's repo."""
+        # TODO is there a less gross way to do this?
+        fields = self._data
+        return CourseSettings.get_settings().student_repo_format.format(**fields).lower()
+
+    @property
+    def repo_url(self):
+        """Get a cloneable URL to the student's GitHub repo."""
+        settings = CourseSettings.get_settings()
+        return 'https://{}:{}@github.com/{}/{}.git'.format(
+            settings.bot_username, settings.bot_token, settings.github_org, self.repo_name
+        )
 
 
-class Mutation(object):
-    pass
+class Assignment(BaseModel):
+    path = CharField(unique=True)
+    status = CharField()
 
 
-class Repo(object):
-    pass
+class Submission(BaseModel):
+    sha = CharField(unique=True)
+    student = ForeignKeyField(Student, related_name='submissions')
+    assignment = ForeignKeyField(Assignment, related_name='assignments')
+    date_collected = DateTimeField(default=datetime.datetime.now)
+    num_late_days = DateTimeField(default=0)
 
 
-class Course(object):
-    pass
+class Mutation(BaseModel):
+    student = ForeignKeyField(Student, related_name='mutations')
+    assignment = ForeignKeyField(Assignment, related_name='mutations')
+    date_performed = DateTimeField(default=datetime.datetime.now)
+
+
+db.connect()
+db.create_tables([Student, Assignment, Submission, Mutation])
+# TODO load SQL dump

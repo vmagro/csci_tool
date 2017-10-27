@@ -3,8 +3,7 @@ from typing import Type, List
 import logging
 import os
 
-from ..student import Student
-from ..models import Assignment, Mutation
+from ..models import Student, Assignment, Mutation
 from ..repo import LocalRepo
 from .. import assignment_utils
 
