@@ -45,14 +45,17 @@ class Database(object):
     def upsert(self, model):
         """Save (insert or update) a model in the db."""
         # write to the file
+        self[model.model_name]
 
 
 class Field(object):
     """Information about a field in a Model."""
 
-    def __init__(self, default=None):
+    def __init__(self, default=None, primary_key=False, auto_increment=False):
         """Create a new Field instance for a Model."""
         self.default = default
+        self.primary_key = primary_key
+        self.auto_increment = auto_increment
 
 
 class Objects(object):
@@ -92,6 +95,17 @@ class ModelMeta(type):
     def __new__(cls, clsname, superclasses, attributes):
         assert 'objects' not in attributes
 
+        # make sure that we were able to find a primary key, if not we should create a default one
+        found_pk = False
+        for key, val in attributes.items():
+            if type(val) == Field:
+                if val.primary_key:
+                    found_pk = True
+                    break
+        if not found_pk:
+            # make an integer pk field
+            attributes['pk'] = Field(primary_key=True, auto_increment=True)
+
         # make sure that we have a reference to the db
         if cls.db is None:
             cls.db = Database('./data.yml')
@@ -101,6 +115,9 @@ class ModelMeta(type):
 
         # also add a reference to the Database
         attributes['db'] = cls.db
+
+        # add an attribute to refer to the model name
+        attributes['model_name'] = clsname
 
         return type.__new__(cls, clsname, superclasses, attributes)
 

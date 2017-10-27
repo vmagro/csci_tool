@@ -31,20 +31,4 @@ using late days, please use the late day form.')
 def setup(config, name, github_org, assignments_repo, grader_team, student_repo_format,
           student_description, comment_on_collect, comment_message, private_repos,
           bot_email, bot_token, bot_username):
-    """Create a new course on the server."""
-    response = api.courses.create(
-        validate=False,
-        name=name,
-        github_org=github_org,
-        assignments_repo=assignments_repo,
-        grader_team=grader_team,
-        student_repo_format=student_repo_format,
-        student_description=student_description,
-        comment_on_collect=comment_on_collect,
-        comment_message=comment_message,
-        private_repos=private_repos,
-        bot_email=bot_email,
-        bot_username=bot_username,
-        bot_token=bot_token,
-    )
-    print(response)
+    """Create a new course with the given settings."""

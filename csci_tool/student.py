@@ -1,15 +1,17 @@
 from .course_settings import CourseSettings
 
+from . import orm
+from .orm import Model
 
-class Student(object):
 
-    def __init__(self, usc_email, usc_id, preferred_name, first_name, last_name, github_username):
-        self.usc_email = usc_email
-        self.usc_id = usc_id
-        self.preferred_name = preferred_name
-        self.first_name = first_name
-        self.last_name = last_name
-        self.github_username = github_username
+class Student(Model):
+
+    usc_email = orm.Field()
+    usc_id = orm.Field()
+    preferred_name = orm.Field()
+    first_name = orm.Field()
+    last_name = orm.Field()
+    github_username = orm.Field()
 
     @property
     def repo_name(self):

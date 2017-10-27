@@ -1,8 +1,6 @@
 """Useful snippets for all commands."""
 import click
 
-# from ..config import Config
-class Config:
-    pass
+from ..orm import Database
 
-pass_config = click.make_pass_decorator(Config)
+pass_db = click.make_pass_decorator(Database)
