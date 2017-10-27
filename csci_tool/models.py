@@ -45,6 +45,10 @@ class Student(BaseModel):
             settings.bot_username, settings.bot_token, settings.github_org, self.repo_name
         )
 
+    def __str__(self):
+        """Get a human-readable string."""
+        return f'{self.preferred_name} {self.last_name} <{self.usc_email}>'
+
 
 class Assignment(BaseModel):
     path = CharField(unique=True)

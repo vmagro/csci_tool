@@ -2,7 +2,7 @@
 
 import click
 
-from ..student import Student
+from ..models import Student
 
 
 @click.group()
@@ -14,23 +14,22 @@ def student():
 @student.command()
 def list():
     """List all students in the database."""
-    students = Student.objects.all()
+    students = Student.select()
     for s in students:
-        s = Student(s)
         print(s)
 
 
 @student.command()
-@click.argument('usc_email')
-@click.argument('usc_id')
-@click.argument('github_username')
-@click.argument('preferred_name')
-@click.argument('first_name')
-@click.argument('last_name')
-def create(usc_email, usc_id, github_username, preferred_name, first_name, last_name):
+@click.option('--unixname', prompt=True)
+@click.option('--usc_id', prompt=True)
+@click.option('--github_username', prompt=True)
+@click.option('--preferred_name', prompt=True)
+@click.option('--first_name', prompt=True)
+@click.option('--last_name', prompt=True)
+def create(unixname, usc_id, github_username, preferred_name, first_name, last_name):
     """Add a new student to the db."""
     student = Student(
-        usc_email=usc_email,
+        unix_name=unixname,
         usc_id=usc_id,
         github_username=github_username,
         preferred_name=preferred_name,
