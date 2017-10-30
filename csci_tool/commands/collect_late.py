@@ -1,5 +1,6 @@
 import argparse
 import logging
+from os import path
 
 from .base import BaseCommand
 from ..config import Config
@@ -41,7 +42,17 @@ class CollectLateCommand(BaseCommand):
 
                 sub_name = '{}_{}'.format(assignment, student.unix_name)
 
-                sub = meta_repo.submodule(sub_name)
+                try:
+                    sub = meta_repo.submodule(sub_name)
+                except:
+                    # if the submodule couldn't be found, create it
+                    dest_dir = path.join('submissions', assignment, student.unix_name)
+                    sub = meta_repo.create_submodule(
+                        name=sub_name,
+                        path=dest_dir,
+                        url=student.repo_url
+                    )
+
                 logger.debug('Updating submodule')
                 sub.update(init=True, force=True)
                 logger.debug('Switching submodule to %s', sha)
