@@ -20,6 +20,7 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/spf13/cobra"
+	"github.com/vmagro/csci_tool/data"
 )
 
 // collectCmd represents the collect command
@@ -49,6 +50,15 @@ Collect project-2 using the latest commit before Sunday October 29th at 23:59:59
 			}
 		}
 		fmt.Printf("Collecting latest commits before \"%s\" for \"%s\"\n", deadline.Format("Mon Jan _2 15:04:05 MST"), project)
+
+		students, err := data.LoadStudents()
+		if err != nil {
+			glog.Fatalf("Failed to load students: %s", err)
+		}
+		fmt.Printf("Collecting from %d students\n", len(students))
+		for _, s := range students {
+			fmt.Printf("Collecting from %s", s)
+		}
 	},
 	Args: cobra.RangeArgs(1, 2),
 }
