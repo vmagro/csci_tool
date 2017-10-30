@@ -65,3 +65,17 @@ func TestRepoUrl(t *testing.T) {
 		t.Fatalf("Got unexpected repo url: %s", repoURL)
 	}
 }
+
+func TestString(t *testing.T) {
+	s := Student{
+		UnixName:      "smagro",
+		UscID:         "12345",
+		PreferredName: "Vinnie",
+		Github:        "vmagro",
+		FirstName:     "Stephen",
+		LastName:      "Magro",
+	}
+	if s.String() != "Vinnie Magro <smagro>" {
+		t.Fatalf("Expected 'Vinnie Magro <smagro>' got '%s'", s.String())
+	}
+}

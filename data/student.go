@@ -19,6 +19,10 @@ type Student struct {
 	LastName      string
 }
 
+func (s Student) String() string {
+	return fmt.Sprintf("%s %s <%s>", s.PreferredName, s.LastName, s.UnixName)
+}
+
 // RepoName gets the name of the Student's GitHub repo using a template string.
 func (s *Student) RepoName() (string, error) {
 	viper.SetDefault("RepoNameTemplate", "hw_{{.UnixName}}")
@@ -50,5 +54,7 @@ func (s *Student) RepoURL() (*url.URL, error) {
 
 // LoadStudents loads a slice containing a struct for every Student
 func LoadStudents() ([]Student, error) {
-	return nil, nil
+	return []Student{
+		Student{PreferredName: "Vinnie", LastName: "Magro", UnixName: "smagro"},
+	}, nil
 }
