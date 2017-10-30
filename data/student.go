@@ -40,7 +40,7 @@ func (s *Student) RepoURL() (*url.URL, error) {
 	if err != nil {
 		return nil, err
 	}
-	urlStr := fmt.Sprintf("http://%s:%s@github.com/%s/%s.git", username, token, githubOrg, repoName)
+	urlStr := fmt.Sprintf("https://%s:%s@github.com/%s/%s.git", username, token, githubOrg, repoName)
 	url, err := url.Parse(urlStr)
 	if err != nil {
 		return nil, err
