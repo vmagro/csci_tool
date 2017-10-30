@@ -25,13 +25,19 @@ import (
 // collectCmd represents the collect command
 var collectCmd = &cobra.Command{
 	Use:   "collect project [deadline]",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Collect commits from all students",
+	Long: `Collect latest commits from all students with an optional deadline (in RFC3339 format).
+The given project/directory name will be used in a comment on the student's repos and will be the only files retained.
+csci will clone each student's repo at the latest commit before the deadline and copy the files under <repo>/<project-name> to a separate directory for later grading.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Examples:
+
+Collect project-1 using the latest commit before the current time
+  csci collect project-1
+
+Collect project-2 using the latest commit before Sunday October 29th at 23:59:59PM PDT
+  csci collect project-2 "2017-10-29T23:59:59-07:00"
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		project := args[0]
 		deadline := time.Now()
