@@ -1,29 +1,21 @@
+// Copyright © 2017 Vinnie Magro <v@vinnie.io>
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package main
 
-import (
-	"flag"
-	"fmt"
-	"os"
-
-	"github.com/spf13/viper"
-	"github.com/vmagro/csci_tool/cmd"
-)
+import "github.com/vmagro/csci_tool/cmd"
 
 func main() {
-	// flag.Lookup("logtostderr").Value.Set("true")
-	flag.Parse()
-
-	viper.SetConfigType("yaml")
-	viper.SetConfigName("cscitool") // name of config file (without extension)
-	viper.AddConfigPath(".")        // optionally look for config in the working directory
-
-	err := viper.ReadInConfig() // Find and read the config file
-	if err != nil {             // Handle errors reading the config file
-		panic(fmt.Errorf("fatal error config file: %s", err))
-	}
-
-	if err := cmd.RootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	cmd.Execute()
 }
