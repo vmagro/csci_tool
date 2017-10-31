@@ -26,7 +26,7 @@ func CopyDir(srcFs, dstFs billy.Filesystem, src, dst string) error {
 		}
 
 		// it's a file - make a new one then copy it
-		dstFile, err := dstFs.Create(dstFs.Join(src, file.Name()))
+		dstFile, err := dstFs.Create(dstFs.Join(dst, file.Name()))
 		if err != nil {
 			return err
 		}

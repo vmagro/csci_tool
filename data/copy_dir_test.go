@@ -32,6 +32,13 @@ func TestCopyDir(t *testing.T) {
 	CopyDir(srcFs, dstFs, "/src", "/dst")
 
 	// make sure that all the destination files exist now
+	// we copied them to a dir named "dst"
+	testFiles = []string{
+		"/dst/important.txt",
+		"/dst/doggo.txt",
+		"/dst/something/else.txt",
+		"/dst/something/nested/nothingtoseehere.txt",
+	}
 	for _, f := range testFiles {
 		if _, err := dstFs.Stat(f); os.IsNotExist(err) {
 			t.Fatalf("%s does not exist in dstFs after copy", f)
