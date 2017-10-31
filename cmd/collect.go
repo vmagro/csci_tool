@@ -24,6 +24,7 @@ import (
 	"github.com/vmagro/csci_tool/data"
 	"gopkg.in/src-d/go-billy.v3/memfs"
 	git "gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/config"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 	"gopkg.in/src-d/go-git.v4/storage/memory"
@@ -57,6 +58,18 @@ func CollectStudent(student *data.Student, deadline time.Time, project string, g
 	if err != nil {
 		return err
 	}
+
+	// for future reference, store the SHA in a file in their repo
+	shaFile, err := submissions.Filesystem.Create(wt.Filesystem.Join(student.UnixName, "SHA"))
+	if err != nil {
+		return fmt.Errorf("Couldn't open file for SHA: %s", err)
+	}
+	defer shaFile.Close()
+	_, err = shaFile.Write([]byte(fmt.Sprintf("%s\n", *commit.SHA)))
+	if err != nil {
+		return fmt.Errorf("Couldn't save SHA: %s", err)
+	}
+
 	err = csgit.AddDir(submissions, student.UnixName)
 	if err != nil {
 		return fmt.Errorf("Couldn't add to git: %s", err)
@@ -140,7 +153,11 @@ Collect project-2 using the latest commit before Sunday October 29th at 23:59:59
 		if err != nil {
 			glog.Fatalf("Failed to commit changes to submissions repo: %s", err)
 		}
-		err = submissionsClone.Push(&git.PushOptions{})
+		err = submissionsClone.Push(&git.PushOptions{
+			RefSpecs: []config.RefSpec{
+				config.RefSpec("+refs/heads/master:refs/heads/master"),
+			},
+		})
 		if err != nil {
 			glog.Fatalf("Failed to push changes to submissions repo: %s", err)
 		}
