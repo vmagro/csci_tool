@@ -1,3 +1,7 @@
+./csci_tool
+.csci.yaml
+students.csv
+
 # Binaries for programs and plugins
 *.exe
 *.dll
