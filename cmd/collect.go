@@ -20,8 +20,62 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/vmagro/csci_tool/data"
+	billy "gopkg.in/src-d/go-billy.v3"
+	"gopkg.in/src-d/go-billy.v3/memfs"
+	git "gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/plumbing"
+	"gopkg.in/src-d/go-git.v4/plumbing/object"
+	"gopkg.in/src-d/go-git.v4/storage/memory"
 )
+
+func ListDir(srcFs billy.Filesystem, src string) {
+	files, _ := srcFs.ReadDir(src)
+
+	for _, file := range files {
+		if file.IsDir() {
+			ListDir(srcFs, srcFs.Join(src, file.Name()))
+			continue
+		}
+		fmt.Println(srcFs.Join(src, file.Name()))
+	}
+}
+
+// CollectStudent clones the proper commit from a student repo and copies it's project files to the
+// submissions repo.
+func CollectStudent(student *data.Student, deadline time.Time, project string, github *data.Github, submissions *git.Worktree) error {
+	commit, err := github.LatestCommitBefore(student, deadline)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Collecting from %s using commit %s\n", student, *commit.SHA)
+
+	// clone the repo into memory, then copy it's files into the other in-memory FS
+	repo, err := data.CloneStudentRepo(student)
+	if err != nil {
+		return err
+	}
+	wt, err := repo.Worktree()
+	wt.Checkout(&git.CheckoutOptions{
+		Hash: plumbing.NewHash(*commit.SHA),
+	})
+	if err != nil {
+		return err
+	}
+
+	err = data.CopyDir(wt.Filesystem, submissions.Filesystem, project, student.UnixName)
+	if err != nil {
+		return err
+	}
+	ListDir(wt.Filesystem, project)
+	ListDir(submissions.Filesystem, "/")
+	_, err = submissions.Add("smagro/rtarget")
+	if err != nil {
+		return fmt.Errorf("Couldn't add %s to git: %s", student.UnixName, err)
+	}
+	return nil
+}
 
 // collectCmd represents the collect command
 var collectCmd = &cobra.Command{
@@ -59,8 +113,22 @@ Collect project-2 using the latest commit before Sunday October 29th at 23:59:59
 		glog.Infof("Connecting to the GitHub API")
 		github := data.NewGithub()
 		submissionsRepo, err := github.CreateRepoIfNotExists(fmt.Sprintf("submissions_%s", project))
+		if err != nil {
+			glog.Fatalf("Failed to get/create submissions repo on Github: %s", err)
+		}
 		fmt.Printf("Storing submissions in Github repo '%s'\n", *submissionsRepo.FullName)
-		// clone the submissions repo to a local directory
+		// clone the submissions repo into an in-memory fs
+		submissionsClone, err := git.Clone(memory.NewStorage(), memfs.New(), &git.CloneOptions{
+			URL:   data.CloneableURL(submissionsRepo),
+			Depth: 1,
+		})
+		if err != nil {
+			glog.Fatalf("Failed to clone submissions repo: %s", err)
+		}
+		submissionsWorktree, err := submissionsClone.Worktree()
+		if err != nil {
+			glog.Fatalf("Failed to open submissions repo working tree: %s", err)
+		}
 
 		students, err := data.LoadStudents()
 		if err != nil {
@@ -68,13 +136,27 @@ Collect project-2 using the latest commit before Sunday October 29th at 23:59:59
 		}
 		fmt.Printf("Collecting from %d students\n", len(students))
 		for _, student := range students {
-			commit, err := github.LatestCommitBefore(student, deadline)
+			err = CollectStudent(student, deadline, project, github, submissionsWorktree)
 			if err != nil {
-				fmt.Printf("Failed to collect from %s (%s)", student, err)
-				continue
+				fmt.Printf("Failed to collect from %s (%s)\n", student, err)
 			}
-			fmt.Printf("Collecting from %s using commit %s\n", student, *commit.SHA)
 		}
+
+		fmt.Println("Pushing submissions to GitHub")
+		_, err = submissionsWorktree.Commit(fmt.Sprintf("Submissions with deadline %s", deadline), &git.CommitOptions{
+			Author: &object.Signature{
+				Name:  viper.GetString("BotUsername"),
+				Email: viper.GetString("BotEmail"),
+				When:  time.Now(),
+			},
+		})
+		if err != nil {
+			glog.Fatalf("Failed to commit changes to submissions repo: %s", err)
+		}
+		// err = submissionsClone.Push(&git.PushOptions{})
+		// if err != nil {
+		// 	glog.Fatalf("Failed to push changes to submissions repo: %s", err)
+		// }
 	},
 	Args: cobra.RangeArgs(1, 2),
 }
