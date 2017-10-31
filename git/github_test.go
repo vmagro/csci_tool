@@ -1,4 +1,4 @@
-package data
+package git
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/go-github/github"
 	"github.com/spf13/viper"
+	"github.com/vmagro/csci_tool/data"
 )
 
 type mockGithubRepositories struct {
@@ -60,7 +61,7 @@ func TestLatestNoSuchRepo(t *testing.T) {
 	g := Github{
 		mockGithubRepositories{},
 	}
-	student := Student{
+	student := data.Student{
 		UnixName: "smagro",
 	}
 	deadline := time.Now()
@@ -78,7 +79,7 @@ func TestLatest(t *testing.T) {
 	g := Github{
 		mockGithubRepositories{},
 	}
-	student := Student{
+	student := data.Student{
 		UnixName: "smagro",
 	}
 	deadline := time.Now()

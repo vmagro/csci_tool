@@ -1,8 +1,9 @@
-package data
+package git
 
 import (
 	"github.com/golang/glog"
 	"github.com/spf13/viper"
+	"github.com/vmagro/csci_tool/data"
 	"gopkg.in/src-d/go-billy.v3/memfs"
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/storage/memory"
@@ -14,7 +15,7 @@ type Repo struct {
 }
 
 // CloneStudentRepo clones a student repo to an in-memory fs
-func CloneStudentRepo(s *Student) (*Repo, error) {
+func CloneStudentRepo(s *data.Student) (*Repo, error) {
 	repoURL, err := s.RepoURL()
 	if err != nil {
 		return nil, err

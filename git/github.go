@@ -1,4 +1,4 @@
-package data
+package git
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/google/go-github/github"
 	"github.com/spf13/viper"
+	"github.com/vmagro/csci_tool/data"
 	"golang.org/x/oauth2"
 )
 
@@ -43,7 +44,7 @@ func getAPIClient() *github.Client {
 }
 
 // LatestCommitBefore gives the latest commit on the master branch before the specified deadline
-func (g *Github) LatestCommitBefore(student *Student, deadline time.Time) (*github.RepositoryCommit, error) {
+func (g *Github) LatestCommitBefore(student *data.Student, deadline time.Time) (*github.RepositoryCommit, error) {
 	glog.Infof("Looking for latest commit from %s before %s", student, deadline)
 	repoName, err := student.RepoName()
 	if err != nil {
