@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/golang/glog"
@@ -92,4 +93,10 @@ func (g *Github) CreateRepoIfNotExists(name string) (*github.Repository, error) 
 		return nil, err
 	}
 	return repo, nil
+}
+
+func CloneableURL(repo *github.Repository) string {
+	username := viper.Get("BotUsername")
+	token := viper.Get("BotToken")
+	return fmt.Sprintf("https://%s:%s@github.com/%s.git", username, token, *repo.FullName)
 }
