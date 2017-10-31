@@ -3,6 +3,7 @@ package data
 import (
 	"github.com/golang/glog"
 	"github.com/spf13/viper"
+	"gopkg.in/src-d/go-billy.v3/memfs"
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/storage/memory"
 )
@@ -12,13 +13,13 @@ type Repo struct {
 	repository *git.Repository
 }
 
-// CloneRepo clones a student repo to an in-memory fs
-func CloneRepo(s *Student) (*Repo, error) {
+// CloneStudentRepo clones a student repo to an in-memory fs
+func CloneStudentRepo(s *Student) (*Repo, error) {
 	repoURL, err := s.RepoURL()
 	if err != nil {
 		return nil, err
 	}
-	r, err := git.Clone(memory.NewStorage(), nil, &git.CloneOptions{
+	r, err := git.Clone(memory.NewStorage(), memfs.New(), &git.CloneOptions{
 		URL:   repoURL.String(),
 		Depth: 1,
 	})
@@ -32,4 +33,8 @@ func CloneRepo(s *Student) (*Repo, error) {
 func (r *Repo) Commit(message string) {
 	author := viper.Get("CommitAuthor")
 	glog.Infof("Commiting '%s' as '%s'", message, author)
+}
+
+func (r *Repo) Worktree() (*git.Worktree, error) {
+	return r.repository.Worktree()
 }
