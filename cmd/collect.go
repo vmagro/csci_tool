@@ -51,13 +51,17 @@ Collect project-2 using the latest commit before Sunday October 29th at 23:59:59
 		}
 		fmt.Printf("Collecting latest commits before \"%s\" for \"%s\"\n", deadline.Format("Mon Jan _2 15:04:05 MST"), project)
 
+		// Try to create a repo to hold the submissions for this assignment if it doesn't exist already
+		glog.Infof("Connecting to the GitHub API")
+		github := data.NewGithub()
+		submissionsRepo, err := github.CreateRepoIfNotExists(fmt.Sprintf("submissions_%s", project))
+		fmt.Printf("Storing submissions in Github repo '%s'\n", *submissionsRepo.FullName)
+
 		students, err := data.LoadStudents()
 		if err != nil {
 			glog.Fatalf("Failed to load students: %s", err)
 		}
 		fmt.Printf("Collecting from %d students\n", len(students))
-		glog.Infof("Connecting to the GitHub API")
-		github := data.NewGithub()
 		for _, student := range students {
 			commit, err := github.LatestCommitBefore(student, deadline)
 			if err != nil {
