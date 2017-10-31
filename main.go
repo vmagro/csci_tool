@@ -14,8 +14,14 @@
 
 package main
 
-import "github.com/vmagro/csci_tool/cmd"
+import (
+	"flag"
+
+	"github.com/vmagro/csci_tool/cmd"
+)
 
 func main() {
+	// keep glog from bitching
+	flag.Parse()
 	cmd.Execute()
 }
