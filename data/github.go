@@ -13,6 +13,8 @@ import (
 // we only use some methods that go-github provides so we define them in interfaces for easier testing
 type repositories interface {
 	ListCommits(ctx context.Context, owner, name string, opt *github.CommitsListOptions) ([]*github.RepositoryCommit, *github.Response, error)
+	Create(ctx context.Context, org string, repo *github.Repository) (*github.Repository, *github.Response, error)
+	Get(ctx context.Context, owner, repo string) (*github.Repository, *github.Response, error)
 }
 
 // Github is csci_tool's github api wrapper
@@ -66,4 +68,28 @@ func (g *Github) LatestCommitBefore(student *Student, deadline time.Time) (*gith
 		}
 	}
 	return latestCommit, nil
+}
+
+// CreateRepoIfNotExists makes a new repo as part of the GitHub org if it does not already exist
+func (g *Github) CreateRepoIfNotExists(name string) (*github.Repository, error) {
+	org := viper.GetString("GithubOrg")
+
+	// don't do anything if the repo already exists
+	repo, _, err := g.Repositories.Get(context.Background(), org, name)
+	if err == nil && repo != nil {
+		return repo, nil
+	}
+
+	viper.SetDefault("PrivateRepos", true)
+	usePrivate := viper.GetBool("PrivateRepos")
+	autoInit := true
+	repo, _, err = g.Repositories.Create(context.Background(), org, &github.Repository{
+		Name:     &name,
+		Private:  &usePrivate,
+		AutoInit: &autoInit,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return repo, nil
 }

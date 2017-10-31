@@ -23,6 +23,10 @@ func (mockGithubRepositories) Get(ctx context.Context, owner, repo string) (*git
 	return nil, nil, fmt.Errorf("No repo %s/%s", owner, repo)
 }
 
+func (mockGithubRepositories) Create(ctx context.Context, org string, repo *github.Repository) (*github.Repository, *github.Response, error) {
+	return nil, nil, nil
+}
+
 func strPointer(in string) *string {
 	return &in
 }
