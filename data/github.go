@@ -20,7 +20,15 @@ type Github struct {
 	Repositories repositories
 }
 
-func GetClient() *github.Client {
+// NewGithub creates an authenticated instance of our wrapper around the GitHub api
+func NewGithub() *Github {
+	apiClient := getAPIClient()
+	return &Github{
+		apiClient.Repositories,
+	}
+}
+
+func getAPIClient() *github.Client {
 	accessToken := viper.GetString("BotToken")
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(

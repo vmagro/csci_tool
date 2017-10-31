@@ -56,8 +56,15 @@ Collect project-2 using the latest commit before Sunday October 29th at 23:59:59
 			glog.Fatalf("Failed to load students: %s", err)
 		}
 		fmt.Printf("Collecting from %d students\n", len(students))
-		for _, s := range students {
-			fmt.Printf("Collecting from %s", s)
+		glog.Infof("Connecting to the GitHub API")
+		github := data.NewGithub()
+		for _, student := range students {
+			commit, err := github.LatestCommitBefore(student, deadline)
+			if err != nil {
+				fmt.Printf("Failed to collect from %s (%s)", student, err)
+				continue
+			}
+			fmt.Printf("Collecting from %s using commit %s\n", student, *commit.SHA)
 		}
 	},
 	Args: cobra.RangeArgs(1, 2),

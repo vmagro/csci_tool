@@ -5,18 +5,20 @@ import (
 	"fmt"
 	"html/template"
 	"net/url"
+	"os"
 
+	"github.com/gocarina/gocsv"
 	"github.com/spf13/viper"
 )
 
 // Student represents a single student enrolled in the class
 type Student struct {
-	UnixName      string
-	UscID         string
-	PreferredName string
-	Github        string
-	FirstName     string
-	LastName      string
+	UnixName      string `csv:"unix_name"`
+	UscID         string `csv:"usc_id"`
+	Github        string `csv:"github"`
+	PreferredName string `csv:"preferred_name"`
+	FirstName     string `csv:"first_name"`
+	LastName      string `csv:"last_name"`
 }
 
 func (s Student) String() string {
@@ -53,8 +55,17 @@ func (s *Student) RepoURL() (*url.URL, error) {
 }
 
 // LoadStudents loads a slice containing a struct for every Student
-func LoadStudents() ([]Student, error) {
-	return []Student{
-		Student{PreferredName: "Vinnie", LastName: "Magro", UnixName: "smagro"},
-	}, nil
+func LoadStudents() ([]*Student, error) {
+	viper.SetDefault("StudentsFile", "students.csv")
+	path := viper.GetString("StudentsFile")
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	students := []*Student{}
+	if err = gocsv.UnmarshalFile(file, &students); err != nil {
+		return nil, err
+	}
+	return students, err
 }

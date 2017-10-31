@@ -55,7 +55,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.csci_tool.yaml)")
+	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.csci.yaml)")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -71,9 +71,10 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".csci_tool" (without extension).
+		// Search config in home directory with name ".csci" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".csci_tool")
+		viper.AddConfigPath(".")
+		viper.SetConfigName(".csci")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
