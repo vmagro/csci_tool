@@ -35,6 +35,8 @@ implemented in any programming language.
 
 	It is up to the 'mutate' program to make any necessary modifications to the repo, 'git commit' and
 		'git push'
+	'mutate' may be run concurrently for multiple repos, but it does not have to be threadsafe - if it
+		is run in parallel, csci_tool takes care of making directory copies as necessary.
 	A non-zero exit code will be recorded as a failure and the student will be logged to csci logs.
 `,
 	Run: func(cmd *cobra.Command, args []string) {

@@ -28,8 +28,12 @@ var collectCmd = &cobra.Command{
 	Use:   "collect project [deadline]",
 	Short: "Collect commits from all students",
 	Long: `Collect latest commits from all students with an optional deadline (in RFC3339 format).
-The given project/directory name will be used in a comment on the student's repos and will be the only files retained.
-csci will clone each student's repo at the latest commit before the deadline and copy the files under <repo>/<project-name> to a separate directory for later grading.
+
+The given project/directory name will be used in a comment on the student's repos and will be the
+only files retained.
+
+csci will clone each student's repo at the latest commit before the deadline and copy the files
+under <repo>/<project-name> to a separate directory for later grading.
 
 Examples:
 
@@ -56,6 +60,7 @@ Collect project-2 using the latest commit before Sunday October 29th at 23:59:59
 		github := data.NewGithub()
 		submissionsRepo, err := github.CreateRepoIfNotExists(fmt.Sprintf("submissions_%s", project))
 		fmt.Printf("Storing submissions in Github repo '%s'\n", *submissionsRepo.FullName)
+		// clone the submissions repo to a local directory
 
 		students, err := data.LoadStudents()
 		if err != nil {
