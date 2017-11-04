@@ -24,8 +24,10 @@ function clone_student {
   rm -rf "$path"
   git clone --depth=1 $(git_url $unixname) "$path" > /dev/null 2>&1
 
+  pushd $path > /dev/null
   git config user.name $author > /dev/null
   git config user.email $email > /dev/null
+  popd > /dev/null
 
   echo $path
 }
