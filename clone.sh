@@ -12,9 +12,14 @@ function git_url {
 # clone a student repo into temporary directory and return its path
 function clone_student {
   unixname=$1
+  if [[ -z "$unixname" ]];
+  then
+    echo "Must provide a student to clone"
+    return 1
+  fi
+
   base=/dev/shm
   path="$base/$unixname"
-  echo "Cloning repo for $unixname to $path"
   # delete if it already exists
   rm -rf "$path"
   git clone --depth=1 $(git_url $unixname) "$path" > /dev/null 2>&1
@@ -30,11 +35,5 @@ function clone_student {
 # bash says the source file name is
 if [[ "$0" = "$BASH_SOURCE" ]];
 then
-  if [[ -n "$1" ]];
-  then
-    clone_student $1
-  else
-    echo "Must provide a student to clone"
-    exit 1
-  fi
+  clone_student $1
 fi
