@@ -26,6 +26,8 @@ function run_for_student {
   # go back
   popd > /dev/null
   echo $result
+
+  rm -rf $path
 }
 
 
