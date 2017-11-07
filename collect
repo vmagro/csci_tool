@@ -1,0 +1,16 @@
+#!/bin/bash
+set -e
+
+unixname=$STUDENT
+project=$1
+dest=$2
+
+# this is annoying due to the way we pass arguments in the run command they get broken up
+deadline_day=$3
+deadline_time=$4
+
+git checkout $(git rev-list -n 1 --before="$deadline_day $deadline_time" master) > /dev/null 2>&1
+
+cp -R "$project" "$dest/$unixname"
+git rev-parse HEAD > "$dest/$unixname/SHA"
+

@@ -22,7 +22,7 @@ function clone_student {
   path="$base/$unixname"
   # delete if it already exists
   rm -rf "$path"
-  git clone --depth=1 $(git_url $unixname) "$path" > /dev/null 2>&1
+  git clone $(git_url $unixname) "$path" > /dev/null 2>&1
 
   pushd $path > /dev/null
   git config user.name $author > /dev/null
