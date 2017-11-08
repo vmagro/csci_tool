@@ -12,5 +12,11 @@ deadline_time=$4
 git checkout $(git rev-list -n 1 --before="$deadline_day $deadline_time" master) > /dev/null 2>&1
 
 cp -R "$project" "$dest/$unixname"
-git rev-parse HEAD > "$dest/$unixname/SHA"
+sha=$(git rev-parse HEAD)
+echo $sha > "$dest/$unixname/SHA"
 
+# leave a comment on the commit
+
+message="This commit was collected as part of '$project', if you are using a late day please disregard this message and use the late day form. If you think this was a mistake please post on Piazza."
+curl --user "$username:$token" -c cookie -b cookie --request POST --data '{"body": "$message"}' \
+  "https://github.com/$org/hw_$unixname/commits/$sha/comments"
