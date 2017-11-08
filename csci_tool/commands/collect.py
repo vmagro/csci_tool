@@ -1,7 +1,11 @@
 import argparse
 import logging
+import os
 from os import path
 import datetime
+import tempfile
+import git
+from distutils import dir_util
 
 from .base import BaseCommand
 from ..config import Config
@@ -20,12 +24,15 @@ class CollectCommand(BaseCommand):
         self.add_argument('students', help='students file', nargs='?',
                           type=argparse.FileType('r'),
                           default=None)
-        self.add_argument('deadline', help='deadline as a unix epoch', nargs='?', default=None)
+        self.add_argument('destination', help='dest directory')
+        self.add_argument('deadline', help='deadline in the form of "2017-11-07 00:05:00 -0700"', nargs='?', default=None)
 
     def run(self, args):
         assignment = args.assignment
         students = self.load_students(args.students)
         logger.info('Collecting %s from %d students', assignment, len(students))
+
+        os.makedirs(args.destination, exist_ok=True)
 
         meta_repo = Repo.meta_repo()
         config = Config.load_config()
@@ -34,39 +41,29 @@ class CollectCommand(BaseCommand):
         failures = []
         for student in students:
             try:
-                dest_dir = path.join('submissions', assignment, student.unix_name)
+                # clone the repo into the subdirectory at args.destination
+                dest_dir = path.join(args.destination, student.unix_name)
                 # just add a submodule rather than downloading the whole repo
-                sub = meta_repo.create_submodule(
-                    name='{}_{}'.format(assignment, student.unix_name),
-                    path=dest_dir,
-                    url=student.repo_url
-                )
-                # if we were given a deadline, update the submodule to the specific commit
-                if args.deadline is not None:
-                    # get the latest commit before the deadline
-                    deadline = datetime.datetime.fromtimestamp(int(args.deadline))
-                    sha = None
-                    repo_fqn = config.github_org + '/' + student.repo_name
-                    # must use fully qualified repo name with org
-                    repo = github.get_repo(repo_fqn)
-                    for c in repo.get_commits():
-                        if c.commit.author.date <= deadline:
-                            sha = c.sha
-                            break
-                    sub.module().git.checkout(sha)
-                    logger.debug('Adding to index')
-                    # this magic incantation is required to get GitPython to commit
-                    sub.binsha = sub.module().head.commit.binsha
-                    meta_repo.index.add([sub])
+                with tempfile.TemporaryDirectory() as tmpdir:
+                    # clone the repo into a temp directory and copy the assignment dir to the submissions dir
+                    repo = git.Repo.clone_from(student.repo_url, tmpdir)
+
+                    # if we have a deadline check out the commit from master at that time
+                    if args.deadline is not None:
+                        rev_list = getattr(repo.git, 'rev-list')
+                        sha = rev_list('master', n=1, before=args.deadline)
+                        dir_util.copy_tree(path.join(tmpdir, assignment), dest_dir)
+                    else:
+                        sha = repo.head.commit.hexsha
 
                 logger.info('Collected %s at %s into %s', student.unix_name,
-                            sub.hexsha, dest_dir)
+                            sha, dest_dir)
 
                 # comment on the commit that we collected
                 repo_fqn = config.github_org + '/' + student.repo_name
                 # must use fully qualified repo name with org
                 repo = github.get_repo(repo_fqn)
-                commit = repo.get_commits(sha=sub.hexsha)[0]
+                commit = repo.get_commits(sha=sha)[0]
                 comment = 'This commit was collected as part of "{}". \n \
 If you think this was a mistake or you want to submit this assignment late, \
 please fill out the late form.'.format(assignment)
