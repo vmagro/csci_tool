@@ -1,10 +1,13 @@
 import argparse
 import logging
+import os
 from os import path
+import tempfile
+import git
+from distutils import dir_util
 
 from .base import BaseCommand
 from ..config import Config
-from ..repo import Repo
 from ..student import Student
 
 
@@ -20,12 +23,12 @@ class CollectLateCommand(BaseCommand):
         self.add_argument('submissions', help='submissions file', nargs='?',
                           type=argparse.FileType('r'),
                           default=None)
+        self.add_argument('destination', help='dest directory')
 
     def run(self, args):
         assignment = args.assignment
         logger.info('Collecting late submissions for %s', assignment)
 
-        meta_repo = Repo.meta_repo()
         config = Config.load_config()
         github = config.github
 
@@ -35,38 +38,27 @@ class CollectLateCommand(BaseCommand):
             email, late_days, sha = line.strip().split(',')
             logger.info('Collecting %s from %s for %s, %s late day(s)',
                         sha, email, assignment, late_days)
-            # there will already be a submodule for them, so we need to update
-            # it instead, and then leave a comment on their GitHub
             try:
                 student = Student(email, None)
 
-                sub_name = '{}_{}'.format(assignment, student.unix_name)
+                # clone the repo into the subdirectory at args.destination
+                dest_dir = path.join(args.destination, student.unix_name)
+                # just add a submodule rather than downloading the whole repo
+                with tempfile.TemporaryDirectory() as tmpdir:
+                    # clone the repo into a temp directory and copy the assignment dir to the submissions dir
+                    repo = git.Repo.clone_from(student.repo_url, tmpdir)
 
-                try:
-                    sub = meta_repo.submodule(sub_name)
-                except:
-                    # if the submodule couldn't be found, create it
-                    dest_dir = path.join('submissions', assignment, student.unix_name)
-                    sub = meta_repo.create_submodule(
-                        name=sub_name,
-                        path=dest_dir,
-                        url=student.repo_url
-                    )
+                    # make sure we got the right sha
+                    repo.git.checkout(sha)
 
-                logger.debug('Updating submodule')
-                sub.update(init=True, force=True)
-                logger.debug('Switching submodule to %s', sha)
-                sub.module().git.checkout(sha)
-                logger.debug('Adding to index')
-                # this magic incantation is required to get GitPython to commit
-                sub.binsha = sub.module().head.commit.binsha
-                meta_repo.index.add([sub])
+                    dir_util.copy_tree(path.join(tmpdir, assignment), dest_dir)
 
                 # comment on the commit that we collected
                 repo_fqn = config.github_org + '/' + student.repo_name
                 # must use fully qualified repo name with org
                 repo = github.get_repo(repo_fqn)
                 commit = repo.get_commits(sha=sha)[0]
+
                 comment = 'This commit was collected as part of "{}". \n \
 This was a late submission using {} late day(s). If you think this is \
 incorrect, please post on Piazza.'.format(assignment, late_days)
@@ -82,10 +74,3 @@ incorrect, please post on Piazza.'.format(assignment, late_days)
             with open('failures.txt', 'w') as f:
                 for s in failures:
                     f.write('{},{},{}\n'.format(email, late_days, sha))
-
-        # commit all the submissions at once
-
-        logger.info('Committing/pushing to meta repo')
-        meta_repo.index.commit('Collected late projects for {}'
-                               .format(assignment))
-        meta_repo.remote().push()
