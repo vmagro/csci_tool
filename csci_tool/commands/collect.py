@@ -52,9 +52,9 @@ class CollectCommand(BaseCommand):
                     if args.deadline is not None:
                         rev_list = getattr(repo.git, 'rev-list')
                         sha = rev_list('master', n=1, before=args.deadline)
-                        dir_util.copy_tree(path.join(tmpdir, assignment), dest_dir)
                     else:
                         sha = repo.head.commit.hexsha
+                    dir_util.copy_tree(path.join(tmpdir, assignment), dest_dir)
 
                 logger.info('Collected %s at %s into %s', student.unix_name,
                             sha, dest_dir)
