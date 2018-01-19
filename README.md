@@ -1,3 +1,5 @@
+This is a continuation of a tool Vinnie Magro (vmagro) started
+
 CSCI Tool
 =========
 
